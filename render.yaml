@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: ticket-app
+    runtime: static
+    buildCommand: "echo Ticket.app 1.0.2 - static site"
+    staticPublishPath: .
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
