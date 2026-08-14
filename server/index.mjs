@@ -139,7 +139,7 @@ app.post('/api/chat',rateLimit,async(req,res)=>{
   const plans=[];
   if(useWeb){
     plans.push({model:SEARCH_MODEL,useWeb:true,complex:false,label:'web'});
-    if(SEARCH_MODEL!==FAST_MODEL)plans.push({model:FAST_MODEL,useWeb:false,complex:false,label:'fast-fallback'});
+    plans.push({model:FAST_MODEL,useWeb:false,complex:false,label:'fast-no-web-fallback'});
   }else if(complex){
     plans.push({model:SMART_MODEL,useWeb:false,complex:true,label:'smart'});
     if(SMART_MODEL!==FAST_MODEL)plans.push({model:FAST_MODEL,useWeb:false,complex:false,label:'fast-fallback'});
