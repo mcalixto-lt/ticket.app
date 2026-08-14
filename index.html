@@ -11,12 +11,14 @@
   <meta name="apple-mobile-web-app-title" content="Ticket." />
   <link rel="manifest" href="./public/manifest.webmanifest" />
   <link rel="icon" href="./public/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./src/styles.css?v=103" />
-  <link rel="stylesheet" href="./src/mobile-auth.css?v=103" />
-  <link rel="stylesheet" href="./src/settings-capture-v103.css?v=103" />
+  <link rel="stylesheet" href="./src/styles.css?v=104" />
+  <link rel="stylesheet" href="./src/mobile-auth.css?v=104" />
+  <link rel="stylesheet" href="./src/settings-capture-v103.css?v=104" />
+  <link rel="stylesheet" href="./src/ticket-fixes-v104.css?v=104" />
   <style>
     #cameraVideo:not(.hidden){z-index:4}
-    .record-lock-chip{position:static!important;grid-column:1/-1;justify-self:end;margin-top:-4px}
+    .record-lock-chip{position:static!important;grid-column:1/-1;justify-self:end;margin-top:-4px;order:2}
+    .record-evidence-strip{order:1}
     @media(max-width:760px){.record-lock-chip{margin-top:-2px}}
   </style>
   <title>Ticket.</title>
@@ -24,7 +26,8 @@
 <body>
   <div id="app"></div>
   <div id="toastRoot" class="toast-root" aria-live="polite"></div>
-  <script src="./app.js?v=103" defer></script>
-  <script src="./src/ticket-enhancements-v103.js?v=103" defer></script>
+  <script src="./app.js?v=104" defer></script>
+  <script src="./src/ticket-enhancements-v103.js?v=104" defer></script>
+  <script src="./src/ticket-fixes-v104.js?v=104" defer></script>
 </body>
 </html>
