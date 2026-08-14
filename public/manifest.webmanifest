@@ -1,0 +1,12 @@
+{
+  "name": "Ticket.",
+  "short_name": "Ticket.",
+  "description": "Controle pessoal de jornada, registros e banco de horas.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#eef1f7",
+  "theme_color": "#eef1f7",
+  "icons": []
+}
