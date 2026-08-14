@@ -4,7 +4,7 @@ services:
     runtime: static
     branch: main
     autoDeployTrigger: commit
-    buildCommand: "echo Ticket.app 1.0.9 - static site"
+    buildCommand: "echo Ticket.app 1.0.10 - static site"
     staticPublishPath: .
     routes:
       - type: rewrite
@@ -25,3 +25,9 @@ services:
         sync: false
       - key: GEMINI_MODEL
         value: gemini-3.5-flash
+      - key: GEMINI_FAST_MODEL
+        value: gemini-2.5-flash
+      - key: GEMINI_SEARCH_MODEL
+        value: gemini-2.5-flash
+      - key: GEMINI_WEB_SEARCH
+        value: "true"
