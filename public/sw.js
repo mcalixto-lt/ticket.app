@@ -1,12 +1,14 @@
-const CACHE = 'ticket-app-v103';
+const CACHE = 'ticket-app-v104';
 const CORE = [
   '/',
   '/index.html',
-  '/app.js?v=103',
-  '/src/styles.css?v=103',
-  '/src/mobile-auth.css?v=103',
-  '/src/settings-capture-v103.css?v=103',
-  '/src/ticket-enhancements-v103.js?v=103',
+  '/app.js?v=104',
+  '/src/styles.css?v=104',
+  '/src/mobile-auth.css?v=104',
+  '/src/settings-capture-v103.css?v=104',
+  '/src/ticket-enhancements-v103.js?v=104',
+  '/src/ticket-fixes-v104.css?v=104',
+  '/src/ticket-fixes-v104.js?v=104',
   '/public/manifest.webmanifest',
   '/public/favicon.svg'
 ];
