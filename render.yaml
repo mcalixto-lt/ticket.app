@@ -2,6 +2,8 @@ services:
   - type: web
     name: ticket-app
     runtime: static
+    branch: main
+    autoDeployTrigger: commit
     buildCommand: "echo Ticket.app 1.0.2 - static site"
     staticPublishPath: .
     routes:
