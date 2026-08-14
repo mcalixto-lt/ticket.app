@@ -11,6 +11,7 @@ const CORE = [
   '/src/ticket-fixes-v104.js?v=105',
   '/src/ticket-enhancements-v105.css?v=105',
   '/src/ticket-enhancements-v105.js?v=105',
+  '/src/ticket-hotfix-v105.js?v=105',
   '/public/manifest.webmanifest',
   '/public/favicon.svg'
 ];
