@@ -47,7 +47,8 @@ app.get('/health',(req,res)=>res.json({
   service:'ticket-app-ai',
   provider:'gemini',
   model:MODEL,
-  configured:Boolean(process.env.GEMINI_API_KEY)
+  configured:Boolean(process.env.GEMINI_API_KEY),
+  mode:'general-assistant'
 }));
 
 app.post('/api/chat',rateLimit,async(req,res)=>{
@@ -58,15 +59,15 @@ app.post('/api/chat',rateLimit,async(req,res)=>{
 
     const message=String(req.body?.message||'').trim();
     if(!message)return res.status(400).json({error:'Mensagem vazia.'});
-    if(message.length>2000)return res.status(400).json({error:'Mensagem muito longa.'});
+    if(message.length>4000)return res.status(400).json({error:'Mensagem muito longa.'});
 
-    const history=Array.isArray(req.body?.history)?req.body.history.slice(-10):[];
+    const history=Array.isArray(req.body?.history)?req.body.history.slice(-14):[];
     const context=req.body?.context||{};
     const transcript=history
-      .map(item=>`${item.role==='assistant'?'Assistente':'Usuário'}: ${String(item.content||'').slice(0,1600)}`)
+      .map(item=>`${item.role==='assistant'?'Assistente':'Usuário'}: ${String(item.content||'').slice(0,2400)}`)
       .join('\n');
 
-    const systemInstruction=`Você é o Assistente Ticket., suporte especializado do aplicativo Ticket. de controle de jornada. Responda sempre em português do Brasil, de forma direta, prática e precisa. Ajude apenas com uso do sistema, registro de ponto, comprovantes, fotos, análise de qualidade, alto contraste, registros imutáveis, jornada semanal, saldo anterior, período de fechamento, banco de horas, calendário, relatórios, PWA e armazenamento local/Google Drive/OneDrive. Nunca diga que alterou um registro já bloqueado e nunca oriente a burlar a imutabilidade. Não peça CPF, senha, token, chave secreta ou conteúdo de fotos. Não invente funções que o Ticket. não possui. Se a pergunta exigir alteração do código-fonte ou uma função inexistente, explique que será necessário desenvolvimento/atualização do sistema. Contexto técnico atual: versão ${String(context.version||'1.0.7')}, plataforma ${String(context.platform||'Web/PWA')}.`;
+    const systemInstruction=`Você é o Assistente Ticket. IA, um assistente geral e também especialista no aplicativo Ticket. de controle de jornada. Responda sempre em português do Brasil, a menos que o usuário peça outro idioma. Sua função é ajudar amplamente em tarefas legítimas: dúvidas gerais, tecnologia, informática, programação, escrita e revisão de textos, cálculos, explicações, estudos, planejamento, produtividade, ideias, organização, suporte técnico e também tudo relacionado ao Ticket. Quando o assunto for o Ticket., conheça registro de ponto, comprovantes, fotos, análise de qualidade, alto contraste, registros imutáveis, jornada semanal, saldo anterior, período de fechamento, banco de horas, calendário, relatórios, PWA e armazenamento local/Google Drive/OneDrive. Seja útil, prático e preciso. Não invente que executou ações que não foram realmente executadas. Não diga que alterou registros bloqueados. Nunca peça senhas, tokens, chaves secretas ou credenciais. Não solicite CPF ou conteúdo privado sem necessidade clara. Se o usuário pedir uma ação dentro do Ticket que ainda não possui uma ferramenta de execução disponível, explique o que pode ser feito e que a automação dessa ação exige uma função específica do sistema. Para informações que dependem de dados em tempo real ou pesquisa na internet, deixe claro quando você não tiver acesso a dados ao vivo em vez de inventar. Contexto técnico do aplicativo: versão ${String(context.version||'1.0.8')}, tela atual ${String(context.view||'desconhecida')}, plataforma ${String(context.platform||'Web/PWA')}.`;
 
     const prompt=`${transcript?`Histórico recente:\n${transcript}\n\n`:''}Pergunta atual do usuário: ${message}`;
 
@@ -76,8 +77,8 @@ app.post('/api/chat',rateLimit,async(req,res)=>{
       contents:prompt,
       config:{
         systemInstruction,
-        temperature:0.25,
-        maxOutputTokens:900
+        temperature:0.45,
+        maxOutputTokens:1800
       }
     });
 
@@ -85,7 +86,8 @@ app.post('/api/chat',rateLimit,async(req,res)=>{
     return res.json({
       answer:answer||'Não consegui gerar uma resposta agora.',
       provider:'gemini',
-      model:MODEL
+      model:MODEL,
+      mode:'general-assistant'
     });
   }catch(error){
     console.error('Ticket Gemini AI error',error);
