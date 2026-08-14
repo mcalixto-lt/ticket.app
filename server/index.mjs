@@ -1,0 +1,65 @@
+import express from 'express';
+import OpenAI from 'openai';
+
+const app=express();
+app.set('trust proxy',1);
+app.use(express.json({limit:'200kb'}));
+
+const PORT=Number(process.env.PORT||10000);
+const MODEL=process.env.OPENAI_MODEL||'gpt-5-mini';
+const explicitOrigins=String(process.env.ALLOWED_ORIGINS||'').split(',').map(v=>v.trim()).filter(Boolean);
+const usage=new Map();
+
+function originAllowed(origin=''){
+  if(!origin)return true;
+  if(explicitOrigins.includes(origin))return true;
+  if(/^https:\/\/ticket-app(?:-[a-z0-9-]+)?\.onrender\.com$/i.test(origin))return true;
+  if(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin))return true;
+  return false;
+}
+app.use((req,res,next)=>{
+  const origin=req.headers.origin||'';
+  if(origin&&originAllowed(origin))res.setHeader('Access-Control-Allow-Origin',origin);
+  res.setHeader('Vary','Origin');
+  res.setHeader('Access-Control-Allow-Headers','Content-Type');
+  res.setHeader('Access-Control-Allow-Methods','POST,GET,OPTIONS');
+  if(req.method==='OPTIONS')return originAllowed(origin)?res.sendStatus(204):res.sendStatus(403);
+  if(origin&&!originAllowed(origin))return res.status(403).json({error:'Origem não autorizada.'});
+  next();
+});
+
+function rateLimit(req,res,next){
+  const key=req.ip||req.socket.remoteAddress||'unknown';
+  const now=Date.now();const windowMs=10*60*1000;const max=30;
+  const item=usage.get(key)||{start:now,count:0};
+  if(now-item.start>windowMs){item.start=now;item.count=0;}
+  item.count++;usage.set(key,item);
+  if(item.count>max)return res.status(429).json({error:'Muitas solicitações. Aguarde alguns minutos.'});
+  next();
+}
+
+app.get('/health',(req,res)=>res.json({ok:true,service:'ticket-app-ai',model:MODEL}));
+app.post('/api/chat',rateLimit,async(req,res)=>{
+  try{
+    if(!process.env.OPENAI_API_KEY)return res.status(503).json({error:'OPENAI_API_KEY não configurada no servidor.'});
+    const message=String(req.body?.message||'').trim();
+    if(!message)return res.status(400).json({error:'Mensagem vazia.'});
+    if(message.length>2000)return res.status(400).json({error:'Mensagem muito longa.'});
+    const history=Array.isArray(req.body?.history)?req.body.history.slice(-10):[];
+    const context=req.body?.context||{};
+    const transcript=history.map(item=>`${item.role==='assistant'?'Assistente':'Usuário'}: ${String(item.content||'').slice(0,1600)}`).join('\n');
+    const client=new OpenAI({apiKey:process.env.OPENAI_API_KEY});
+    const response=await client.responses.create({
+      model:MODEL,
+      instructions:`Você é o Assistente Ticket., suporte especializado do aplicativo Ticket. de controle de jornada. Responda sempre em português do Brasil, de forma direta e prática. Ajude apenas com uso do sistema, registro de ponto, comprovantes, fotos, análise de qualidade, alto contraste, registros imutáveis, jornada semanal, saldo anterior, fechamento, banco de horas, calendário, relatórios, PWA e armazenamento local/Google Drive/OneDrive. Nunca diga que alterou um registro já bloqueado e nunca oriente a burlar a imutabilidade. Não peça CPF, senha, token, chave secreta ou conteúdo de fotos. Se a pergunta exigir alteração do código-fonte ou uma função inexistente, explique que é necessário desenvolvimento/atualização do sistema. Contexto técnico atual: versão ${String(context.version||'1.0.7')}, plataforma ${String(context.platform||'Web')}.`,
+      input:`${transcript?`Histórico recente:\n${transcript}\n\n`:''}Pergunta atual do usuário: ${message}`
+    });
+    const answer=String(response.output_text||'').trim();
+    res.json({answer:answer||'Não consegui gerar uma resposta agora.'});
+  }catch(error){
+    console.error('Ticket AI error',error);
+    res.status(500).json({error:'Falha ao consultar a IA.'});
+  }
+});
+
+app.listen(PORT,'0.0.0.0',()=>console.log(`Ticket AI API listening on ${PORT}`));
