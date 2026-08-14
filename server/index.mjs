@@ -1,12 +1,12 @@
 import express from 'express';
-import OpenAI from 'openai';
+import { GoogleGenAI } from '@google/genai';
 
 const app=express();
 app.set('trust proxy',1);
 app.use(express.json({limit:'200kb'}));
 
 const PORT=Number(process.env.PORT||10000);
-const MODEL=process.env.OPENAI_MODEL||'gpt-5-mini';
+const MODEL=process.env.GEMINI_MODEL||'gemini-3.5-flash';
 const explicitOrigins=String(process.env.ALLOWED_ORIGINS||'').split(',').map(v=>v.trim()).filter(Boolean);
 const usage=new Map();
 
@@ -17,6 +17,7 @@ function originAllowed(origin=''){
   if(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin))return true;
   return false;
 }
+
 app.use((req,res,next)=>{
   const origin=req.headers.origin||'';
   if(origin&&originAllowed(origin))res.setHeader('Access-Control-Allow-Origin',origin);
@@ -30,36 +31,70 @@ app.use((req,res,next)=>{
 
 function rateLimit(req,res,next){
   const key=req.ip||req.socket.remoteAddress||'unknown';
-  const now=Date.now();const windowMs=10*60*1000;const max=30;
+  const now=Date.now();
+  const windowMs=10*60*1000;
+  const max=30;
   const item=usage.get(key)||{start:now,count:0};
   if(now-item.start>windowMs){item.start=now;item.count=0;}
-  item.count++;usage.set(key,item);
+  item.count++;
+  usage.set(key,item);
   if(item.count>max)return res.status(429).json({error:'Muitas solicitações. Aguarde alguns minutos.'});
   next();
 }
 
-app.get('/health',(req,res)=>res.json({ok:true,service:'ticket-app-ai',model:MODEL}));
+app.get('/health',(req,res)=>res.json({
+  ok:true,
+  service:'ticket-app-ai',
+  provider:'gemini',
+  model:MODEL,
+  configured:Boolean(process.env.GEMINI_API_KEY)
+}));
+
 app.post('/api/chat',rateLimit,async(req,res)=>{
   try{
-    if(!process.env.OPENAI_API_KEY)return res.status(503).json({error:'OPENAI_API_KEY não configurada no servidor.'});
+    if(!process.env.GEMINI_API_KEY){
+      return res.status(503).json({error:'GEMINI_API_KEY não configurada no servidor.'});
+    }
+
     const message=String(req.body?.message||'').trim();
     if(!message)return res.status(400).json({error:'Mensagem vazia.'});
     if(message.length>2000)return res.status(400).json({error:'Mensagem muito longa.'});
+
     const history=Array.isArray(req.body?.history)?req.body.history.slice(-10):[];
     const context=req.body?.context||{};
-    const transcript=history.map(item=>`${item.role==='assistant'?'Assistente':'Usuário'}: ${String(item.content||'').slice(0,1600)}`).join('\n');
-    const client=new OpenAI({apiKey:process.env.OPENAI_API_KEY});
-    const response=await client.responses.create({
+    const transcript=history
+      .map(item=>`${item.role==='assistant'?'Assistente':'Usuário'}: ${String(item.content||'').slice(0,1600)}`)
+      .join('\n');
+
+    const systemInstruction=`Você é o Assistente Ticket., suporte especializado do aplicativo Ticket. de controle de jornada. Responda sempre em português do Brasil, de forma direta, prática e precisa. Ajude apenas com uso do sistema, registro de ponto, comprovantes, fotos, análise de qualidade, alto contraste, registros imutáveis, jornada semanal, saldo anterior, período de fechamento, banco de horas, calendário, relatórios, PWA e armazenamento local/Google Drive/OneDrive. Nunca diga que alterou um registro já bloqueado e nunca oriente a burlar a imutabilidade. Não peça CPF, senha, token, chave secreta ou conteúdo de fotos. Não invente funções que o Ticket. não possui. Se a pergunta exigir alteração do código-fonte ou uma função inexistente, explique que será necessário desenvolvimento/atualização do sistema. Contexto técnico atual: versão ${String(context.version||'1.0.7')}, plataforma ${String(context.platform||'Web/PWA')}.`;
+
+    const prompt=`${transcript?`Histórico recente:\n${transcript}\n\n`:''}Pergunta atual do usuário: ${message}`;
+
+    const ai=new GoogleGenAI({apiKey:process.env.GEMINI_API_KEY});
+    const response=await ai.models.generateContent({
       model:MODEL,
-      instructions:`Você é o Assistente Ticket., suporte especializado do aplicativo Ticket. de controle de jornada. Responda sempre em português do Brasil, de forma direta e prática. Ajude apenas com uso do sistema, registro de ponto, comprovantes, fotos, análise de qualidade, alto contraste, registros imutáveis, jornada semanal, saldo anterior, fechamento, banco de horas, calendário, relatórios, PWA e armazenamento local/Google Drive/OneDrive. Nunca diga que alterou um registro já bloqueado e nunca oriente a burlar a imutabilidade. Não peça CPF, senha, token, chave secreta ou conteúdo de fotos. Se a pergunta exigir alteração do código-fonte ou uma função inexistente, explique que é necessário desenvolvimento/atualização do sistema. Contexto técnico atual: versão ${String(context.version||'1.0.7')}, plataforma ${String(context.platform||'Web')}.`,
-      input:`${transcript?`Histórico recente:\n${transcript}\n\n`:''}Pergunta atual do usuário: ${message}`
+      contents:prompt,
+      config:{
+        systemInstruction,
+        temperature:0.25,
+        maxOutputTokens:900
+      }
     });
-    const answer=String(response.output_text||'').trim();
-    res.json({answer:answer||'Não consegui gerar uma resposta agora.'});
+
+    const answer=String(response.text||'').trim();
+    return res.json({
+      answer:answer||'Não consegui gerar uma resposta agora.',
+      provider:'gemini',
+      model:MODEL
+    });
   }catch(error){
-    console.error('Ticket AI error',error);
-    res.status(500).json({error:'Falha ao consultar a IA.'});
+    console.error('Ticket Gemini AI error',error);
+    const status=Number(error?.status||error?.code||0);
+    if(status===429){
+      return res.status(429).json({error:'O limite gratuito do Gemini foi atingido temporariamente. Aguarde um pouco e tente novamente.'});
+    }
+    return res.status(500).json({error:'Falha ao consultar o Assistente Gemini.'});
   }
 });
 
-app.listen(PORT,'0.0.0.0',()=>console.log(`Ticket AI API listening on ${PORT}`));
+app.listen(PORT,'0.0.0.0',()=>console.log(`Ticket Gemini AI API listening on ${PORT} with ${MODEL}`));
