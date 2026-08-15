@@ -7,8 +7,8 @@ app.use(express.json({limit:'300kb'}));
 
 const PORT=Number(process.env.PORT||10000);
 const SMART_MODEL=process.env.GEMINI_MODEL||'gemini-3.5-flash';
-const FAST_MODEL=process.env.GEMINI_FAST_MODEL||'gemini-2.5-flash';
-const SEARCH_MODEL=process.env.GEMINI_SEARCH_MODEL||'gemini-2.5-flash';
+const FAST_MODEL=process.env.GEMINI_FAST_MODEL||'gemini-3.1-flash-lite';
+const SEARCH_MODEL=process.env.GEMINI_SEARCH_MODEL||'gemini-2.5-flash-lite';
 const WEB_SEARCH_ENABLED=String(process.env.GEMINI_WEB_SEARCH||'true').toLowerCase()!=='false';
 const explicitOrigins=String(process.env.ALLOWED_ORIGINS||'').split(',').map(v=>v.trim()).filter(Boolean);
 const usage=new Map();
@@ -37,11 +37,10 @@ function rateLimit(req,res,next){
   const key=req.ip||req.socket.remoteAddress||'unknown';
   const now=Date.now();
   const windowMs=10*60*1000;
-  const max=50;
+  const max=60;
   const item=usage.get(key)||{start:now,count:0};
   if(now-item.start>windowMs){item.start=now;item.count=0;}
-  item.count++;
-  usage.set(key,item);
+  item.count++;usage.set(key,item);
   if(item.count>max)return res.status(429).json({error:'Muitas solicitações. Aguarde alguns minutos.'});
   next();
 }
@@ -57,45 +56,36 @@ function normalizeText(value=''){
 
 function needsWebSearch(message=''){
   const q=normalizeText(message);
-  return /\b(hoje|amanha|agora|neste momento|tempo|clima|previsao|noticia|noticias|ultima|ultimas|ultimo|ultimos|atual|atuais|recentes?|placar|resultado|jogo|partida|cotacao|cambio|dolar|euro|bitcoin|preco|valor atual|transito|voo|aeroporto|agenda|horario|feriado|presidente atual|governador atual|prefeito atual|pesquise|pesquisar|procure|buscar|busque|internet|web|site|fonte|fontes|link|links)\b/.test(q);
+  return /\b(hoje|amanha|agora|neste momento|tempo|clima|previsao|noticia|noticias|ultima|ultimas|ultimo|ultimos|atual|atuais|recente|recentes|placar|resultado|jogo|partida|cotacao|cambio|dolar|euro|bitcoin|preco|precos|valor atual|transito|voo|aeroporto|agenda|horario|feriado|presidente atual|governador atual|prefeito atual|pesquise|pesquisar|procure|buscar|busque|internet|web|site|fonte|fontes|link|links)\b/.test(q);
 }
 
 function isComplex(message=''){
   const q=normalizeText(message);
-  return String(message).length>1400||/\b(analise profundamente|analise detalhada|debug|depure|arquitetura|refatore|refatorar|codigo completo|estrategia detalhada|compare detalhadamente|plano completo)\b/.test(q);
+  return String(message).length>1800||/\b(analise profundamente|analise detalhada|debug|depure|arquitetura|refatore|refatorar|codigo completo|estrategia detalhada|compare detalhadamente|plano completo)\b/.test(q);
 }
 
 function modelConfig(model,systemInstruction,{useWeb=false,complex=false}={}){
-  const config={systemInstruction,maxOutputTokens:complex?1800:1100};
-  if(/^gemini-3/i.test(model)){
-    config.thinkingConfig={thinkingLevel:complex?ThinkingLevel.MEDIUM:ThinkingLevel.LOW};
-  }else if(/^gemini-2\.5/i.test(model)){
-    config.thinkingConfig={thinkingBudget:complex?512:0};
-  }
+  const config={systemInstruction,maxOutputTokens:complex?1700:900};
+  if(/^gemini-3/i.test(model))config.thinkingConfig={thinkingLevel:complex?ThinkingLevel.MEDIUM:ThinkingLevel.LOW};
+  else if(/^gemini-2\.5/i.test(model))config.thinkingConfig={thinkingBudget:complex?384:0};
   if(useWeb)config.tools=[{googleSearch:{}}];
   return config;
 }
 
 function extractSources(response){
   const chunks=response?.candidates?.[0]?.groundingMetadata?.groundingChunks||[];
-  const seen=new Set();
-  const sources=[];
+  const seen=new Set();const sources=[];
   for(const chunk of chunks){
     const web=chunk?.web;
     if(!web?.uri||seen.has(web.uri))continue;
-    seen.add(web.uri);
-    sources.push({title:String(web.title||'Fonte'),url:String(web.uri)});
-    if(sources.length>=6)break;
+    seen.add(web.uri);sources.push({title:String(web.title||'Fonte'),url:String(web.uri)});
+    if(sources.length>=5)break;
   }
   return sources;
 }
 
-async function askGemini(model,prompt,systemInstruction,{useWeb=false,complex=false}={}){
-  return ai.models.generateContent({
-    model,
-    contents:prompt,
-    config:modelConfig(model,systemInstruction,{useWeb,complex})
-  });
+async function askGemini(model,prompt,systemInstruction,options={}){
+  return ai.models.generateContent({model,contents:prompt,config:modelConfig(model,systemInstruction,options)});
 }
 
 app.get('/health',(req,res)=>res.json({
@@ -108,38 +98,30 @@ app.get('/health',(req,res)=>res.json({
   webSearch:WEB_SEARCH_ENABLED,
   configured:Boolean(process.env.GEMINI_API_KEY),
   mode:'general-web-assistant',
-  version:'1.0.10'
+  version:'1.0.11'
 }));
 
 app.post('/api/chat',rateLimit,async(req,res)=>{
-  if(!process.env.GEMINI_API_KEY){
-    return res.status(503).json({error:'GEMINI_API_KEY não configurada no servidor.',code:'gemini_not_configured'});
-  }
-
+  if(!process.env.GEMINI_API_KEY)return res.status(503).json({error:'GEMINI_API_KEY não configurada no servidor.',code:'gemini_not_configured'});
   const message=String(req.body?.message||'').trim();
   if(!message)return res.status(400).json({error:'Mensagem vazia.'});
   if(message.length>6000)return res.status(400).json({error:'Mensagem muito longa.'});
 
-  const history=Array.isArray(req.body?.history)?req.body.history.slice(-14):[];
+  const history=Array.isArray(req.body?.history)?req.body.history.slice(-10):[];
   const context=req.body?.context||{};
-  const transcript=history
-    .map(item=>`${item.role==='assistant'?'Assistente':'Usuário'}: ${String(item.content||'').slice(0,2200)}`)
-    .join('\n');
-
+  const transcript=history.map(item=>`${item.role==='assistant'?'Assistente':'Usuário'}: ${String(item.content||'').slice(0,1400)}`).join('\n');
   const useWeb=WEB_SEARCH_ENABLED&&(Boolean(req.body?.forceWeb)||needsWebSearch(message));
   const complex=isComplex(message);
   const localDateTime=String(context.localDateTime||'');
   const timeZone=String(context.timeZone||'');
-  const language=String(context.language||'pt-BR');
 
-  const systemInstruction=`Você é o Assistente Ticket. IA, um assistente geral de propósito amplo. Ajude o usuário com praticamente qualquer tarefa legítima: dúvidas gerais, tecnologia, informática, programação, redes, hardware, software, escrita, revisão, cálculos, estudos, planejamento, produtividade, ideias, organização, explicações e troubleshooting. Não limite a conversa ao Ticket. Quando o assunto for o aplicativo Ticket., use conhecimento especializado sobre registro de ponto, comprovantes, fotos, qualidade da imagem, alto contraste, registros imutáveis, jornada semanal, saldo anterior, fechamento, banco de horas, calendário, relatórios, PWA e armazenamento local/Google Drive/OneDrive. Responda em português do Brasil, salvo se o usuário pedir outro idioma. Seja direto, útil e resolutivo. Se a pergunta depender de informação atual e a pesquisa Google estiver disponível nesta solicitação, use a pesquisa para responder com dados atuais e não invente. Se faltar um dado essencial, como cidade para previsão do tempo, faça uma pergunta curta para obter esse dado em vez de dizer que não tem acesso. Não alegue ter executado ações que não executou. Nunca peça senha, token, chave secreta ou credencial. Contexto do aparelho: data/hora local ${localDateTime||'não informada'}, fuso ${timeZone||'não informado'}, idioma ${language}. Contexto do app: versão ${String(context.version||'1.0.10')}, tela ${String(context.view||'desconhecida')}, plataforma ${String(context.platform||'Web/PWA')}.`;
-
-  const prompt=`${transcript?`Histórico recente:\n${transcript}\n\n`:''}Mensagem atual do usuário: ${message}`;
+  const systemInstruction=`Você é o Assistente Ticket. IA, um assistente geral. Responda diretamente ao pedido do usuário e ajude em qualquer tarefa legítima: dúvidas gerais, tecnologia, informática, programação, redes, hardware, software, textos, cálculos, estudos, planejamento, produtividade, ideias, organização e troubleshooting. Não limite a conversa ao Ticket. Quando o assunto for o aplicativo Ticket., use conhecimento especializado sobre registro de ponto, comprovantes, fotos, jornada, saldo, fechamento, banco de horas, calendário, relatórios e armazenamento. Responda em português do Brasil salvo pedido contrário. Seja objetivo, resolutivo e não invente fatos ou ações. Quando a pergunta exigir informação atual e a Pesquisa Google estiver habilitada, use-a. Se faltar um dado essencial, faça apenas a pergunta necessária. Não peça senha, token, chave secreta ou credencial. Data/hora do aparelho: ${localDateTime||'não informada'}; fuso: ${timeZone||'não informado'}.`;
+  const prompt=`${transcript?`Histórico recente:\n${transcript}\n\n`:''}Mensagem atual: ${message}`;
 
   const plans=[];
   if(useWeb){
-    plans.push({model:SEARCH_MODEL,useWeb:true,complex:false,label:'web'});
-    plans.push({model:FAST_MODEL,useWeb:false,complex:false,label:'fast-no-web-fallback'});
+    plans.push({model:SEARCH_MODEL,useWeb:true,complex:false,label:'search'});
+    plans.push({model:FAST_MODEL,useWeb:false,complex:false,label:'fast-fallback'});
   }else if(complex){
     plans.push({model:SMART_MODEL,useWeb:false,complex:true,label:'smart'});
     if(SMART_MODEL!==FAST_MODEL)plans.push({model:FAST_MODEL,useWeb:false,complex:false,label:'fast-fallback'});
@@ -148,25 +130,14 @@ app.post('/api/chat',rateLimit,async(req,res)=>{
     if(FAST_MODEL!==SMART_MODEL)plans.push({model:SMART_MODEL,useWeb:false,complex:false,label:'smart-fallback'});
   }
 
-  const attempts=[];
-  let lastError=null;
-
+  const attempts=[];let lastError=null;
   for(const plan of plans){
     const started=Date.now();
     try{
       const response=await askGemini(plan.model,prompt,systemInstruction,{useWeb:plan.useWeb,complex:plan.complex});
       const answer=String(response.text||'').trim();
       if(!answer)throw Object.assign(new Error('Resposta vazia do modelo.'),{status:502});
-      const sources=plan.useWeb?extractSources(response):[];
-      return res.json({
-        answer,
-        provider:'gemini',
-        model:plan.model,
-        usedWeb:plan.useWeb,
-        sources,
-        latencyMs:Date.now()-started,
-        mode:'general-web-assistant'
-      });
+      return res.json({answer,provider:'gemini',model:plan.model,usedWeb:plan.useWeb,sources:plan.useWeb?extractSources(response):[],latencyMs:Date.now()-started,mode:'general-web-assistant'});
     }catch(error){
       lastError=error;
       const status=errorStatus(error);
@@ -177,13 +148,9 @@ app.post('/api/chat',rateLimit,async(req,res)=>{
   }
 
   const status=errorStatus(lastError);
-  if(status===401||status===403){
-    return res.status(503).json({error:'A chave do Gemini ou o recurso solicitado foi recusado pelo Google. Verifique a GEMINI_API_KEY e as permissões do projeto.',code:'gemini_auth',attempts});
-  }
-  if(status===429){
-    return res.status(429).json({error:'O limite gratuito do Gemini foi atingido temporariamente. Tente novamente em alguns instantes.',code:'gemini_quota',attempts});
-  }
-  return res.status(503).json({error:'O Gemini não respondeu agora. O Ticket tentou automaticamente outra rota de resposta.',code:'gemini_unavailable',attempts});
+  if(status===401||status===403)return res.status(503).json({error:'A chave do Gemini ou o recurso solicitado foi recusado pelo Google.',code:'gemini_auth',attempts});
+  if(status===429)return res.status(429).json({error:'O limite gratuito do Gemini foi atingido temporariamente. Tente novamente em alguns instantes.',code:'gemini_quota',attempts});
+  return res.status(503).json({error:'O Gemini não respondeu agora. O Ticket tentou automaticamente outra rota.',code:'gemini_unavailable',attempts});
 });
 
-app.listen(PORT,'0.0.0.0',()=>console.log(`Ticket Gemini AI API 1.0.10 listening on ${PORT}; fast ${FAST_MODEL}; search ${SEARCH_MODEL}; smart ${SMART_MODEL}`));
+app.listen(PORT,'0.0.0.0',()=>console.log(`Ticket Gemini AI API 1.0.11 listening on ${PORT}; fast ${FAST_MODEL}; search ${SEARCH_MODEL}; smart ${SMART_MODEL}`));
