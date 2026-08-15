@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Ticket.">
+  <defs>
+    <linearGradient id="ticketMaskGradient" x1="120" y1="110" x2="398" y2="402" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#835fff"/>
+      <stop offset="1" stop-color="#4c24a8"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="#eef1f7"/>
+  <circle cx="256" cy="256" r="166" fill="#f9faff" stroke="#fff" stroke-width="4"/>
+  <g fill="none" stroke="url(#ticketMaskGradient)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M179 183a122 122 0 1 1-25 142"/>
+    <path d="M151 183h92v92"/>
+    <path d="m157 190 80 80"/>
+  </g>
+</svg>
