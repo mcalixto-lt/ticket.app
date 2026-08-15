@@ -9,19 +9,22 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Ticket." />
-  <link rel="manifest" href="./public/manifest.webmanifest?v=112" />
-  <link rel="icon" href="./public/app-icon.svg?v=112" type="image/svg+xml" />
+  <link rel="manifest" href="./public/manifest.webmanifest?v=113" />
+  <link rel="icon" href="./public/app-icon-v113.svg?v=113" type="image/svg+xml" />
   <link rel="preconnect" href="https://ticket-app-ai.onrender.com" crossorigin />
   <link rel="dns-prefetch" href="https://ticket-app-ai.onrender.com" />
-  <link rel="stylesheet" href="./src/styles.css?v=112" />
-  <link rel="stylesheet" href="./src/mobile-auth.css?v=112" />
-  <link rel="stylesheet" href="./src/settings-capture-v103.css?v=112" />
-  <link rel="stylesheet" href="./src/ticket-fixes-v104.css?v=112" />
-  <link rel="stylesheet" href="./src/ticket-enhancements-v105.css?v=112" />
-  <link rel="stylesheet" href="./src/ticket-enhancements-v106.css?v=112" />
-  <link rel="stylesheet" href="./src/ticket-enhancements-v107.css?v=112" />
-  <link rel="stylesheet" href="./src/ticket-enhancements-v111.css?v=112" />
-  <link rel="stylesheet" href="./src/ticket-enhancements-v112.css?v=112" />
+  <link rel="preconnect" href="https://api.open-meteo.com" crossorigin />
+  <link rel="dns-prefetch" href="https://api.open-meteo.com" />
+  <link rel="stylesheet" href="./src/styles.css?v=113" />
+  <link rel="stylesheet" href="./src/mobile-auth.css?v=113" />
+  <link rel="stylesheet" href="./src/settings-capture-v103.css?v=113" />
+  <link rel="stylesheet" href="./src/ticket-fixes-v104.css?v=113" />
+  <link rel="stylesheet" href="./src/ticket-enhancements-v105.css?v=113" />
+  <link rel="stylesheet" href="./src/ticket-enhancements-v106.css?v=113" />
+  <link rel="stylesheet" href="./src/ticket-enhancements-v107.css?v=113" />
+  <link rel="stylesheet" href="./src/ticket-enhancements-v111.css?v=113" />
+  <link rel="stylesheet" href="./src/ticket-enhancements-v112.css?v=113" />
+  <link rel="stylesheet" href="./src/ticket-enhancements-v113.css?v=113" />
   <style>
     #cameraVideo:not(.hidden){z-index:4}
     .record-lock-chip{position:static!important;grid-column:1/-1;justify-self:end;margin-top:-4px;order:2}
@@ -38,7 +41,7 @@
 <body>
   <div id="ticketBootSplash" class="ticket-boot-splash" aria-hidden="true">
     <div class="ticket-boot-tile">
-      <svg class="ticket-boot-logo" viewBox="0 0 128 128" aria-hidden="true">
+      <svg class="ticket-boot-logo" viewBox="0 0 128 128" aria-hidden="true" shape-rendering="geometricPrecision">
         <defs>
           <linearGradient id="bootTicketGradient" x1="24" y1="20" x2="106" y2="109" gradientUnits="userSpaceOnUse">
             <stop offset="0" stop-color="#835fff" />
@@ -66,23 +69,24 @@
       };
       spinner.addEventListener('animationend',close,{once:true});
       requestAnimationFrame(()=>splash.classList.add('run'));
-      setTimeout(close,2200);
+      setTimeout(close,2300);
     })();
   </script>
   <div id="app"></div>
   <div id="toastRoot" class="toast-root" aria-live="polite"></div>
-  <script src="./app.js?v=112" defer></script>
-  <script src="./src/ticket-enhancements-v103.js?v=112" defer></script>
-  <script src="./src/ticket-fixes-v104.js?v=112" defer></script>
-  <script src="./src/ticket-enhancements-v105.js?v=112" defer></script>
-  <script src="./src/ticket-hotfix-v105.js?v=112" defer></script>
-  <script src="./src/ticket-enhancements-v106.js?v=112" defer></script>
-  <script src="./src/ticket-enhancements-v107.js?v=112" defer></script>
-  <script src="./src/ticket-ai-v108.js?v=112" defer></script>
-  <script src="./src/ticket-ai-v109.js?v=112" defer></script>
-  <script src="./src/ticket-ai-v110.js?v=112" defer></script>
-  <script src="./src/ticket-enhancements-v111.js?v=112" defer></script>
-  <script src="./src/ticket-ai-v111.js?v=112" defer></script>
-  <script src="./src/ticket-enhancements-v112.js?v=112" defer></script>
+  <script src="./app.js?v=113" defer></script>
+  <script src="./src/ticket-enhancements-v103.js?v=113" defer></script>
+  <script src="./src/ticket-fixes-v104.js?v=113" defer></script>
+  <script src="./src/ticket-enhancements-v105.js?v=113" defer></script>
+  <script src="./src/ticket-hotfix-v105.js?v=113" defer></script>
+  <script src="./src/ticket-enhancements-v106.js?v=113" defer></script>
+  <script src="./src/ticket-enhancements-v107.js?v=113" defer></script>
+  <script src="./src/ticket-ai-v108.js?v=113" defer></script>
+  <script src="./src/ticket-ai-v109.js?v=113" defer></script>
+  <script src="./src/ticket-ai-v110.js?v=113" defer></script>
+  <script src="./src/ticket-enhancements-v111.js?v=113" defer></script>
+  <script src="./src/ticket-ai-v111.js?v=113" defer></script>
+  <script src="./src/ticket-enhancements-v112.js?v=113" defer></script>
+  <script src="./src/ticket-enhancements-v113.js?v=113" defer></script>
 </body>
 </html>
