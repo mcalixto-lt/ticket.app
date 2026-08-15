@@ -4,6 +4,7 @@
 state.weatherV113=state.weatherV113||{status:'idle',temperature:null,apparent:null,code:null,isDay:1,updatedAt:0,coords:null};
 
 function v113WeatherDescription(code){
+  if(code==null)return 'Clima local';
   const c=Number(code);
   if(c===0)return 'Céu limpo';
   if([1,2].includes(c))return 'Parcialmente nublado';
@@ -17,6 +18,7 @@ function v113WeatherDescription(code){
 }
 
 function v113WeatherTone(code,isDay=1){
+  if(code==null)return 'partly';
   const c=Number(code);
   if(c===0)return isDay?'sun':'night';
   if([1,2].includes(c))return 'partly';
@@ -44,7 +46,8 @@ function v113WeatherGlyph(code,isDay=1,size=21){
 function v113WeatherButtonMarkup(){
   const w=state.weatherV113;
   const tone=v113WeatherTone(w.code,w.isDay);
-  const temp=Number.isFinite(Number(w.temperature))?`${Math.round(Number(w.temperature))}°`:'--°';
+  const hasTemp=w.temperature!=null&&Number.isFinite(Number(w.temperature));
+  const temp=hasTemp?`${Math.round(Number(w.temperature))}°`:'--°';
   const title=w.status==='ready'?`${v113WeatherDescription(w.code)} · ${temp}`:w.status==='loading'?'Atualizando clima…':'Clima local';
   return `<button type="button" class="v113-weather-launcher ${tone}" data-weather-v113 title="${esc(title)}" aria-label="${esc(title)}"><span class="v113-weather-glyph">${v113WeatherGlyph(w.code,w.isDay,20)}</span><strong>${temp}</strong></button>`;
 }
@@ -59,7 +62,7 @@ function v113InstallWeatherLauncher(){
   if(mobileGroup&&!mobileGroup.querySelector('[data-weather-v113]'))mobileGroup.insertAdjacentHTML('afterbegin',v113WeatherButtonMarkup());
   const desktopAi=document.querySelector('.topbar .toolbar [data-view="profile"]');
   if(desktopAi&&!document.querySelector('.topbar .toolbar [data-weather-v113]'))desktopAi.insertAdjacentHTML('beforebegin',v113WeatherButtonMarkup());
-  document.querySelectorAll('[data-weather-v113]').forEach(btn=>btn.addEventListener('click',()=>v113OpenWeather(btn,true)));
+  document.querySelectorAll('[data-weather-v113]').forEach(btn=>{btn.onclick=()=>v113OpenWeather(btn,false);});
 }
 
 function v113UpdateWeatherLaunchers(){
@@ -106,8 +109,10 @@ async function v113OpenWeather(button,force=false){
   if(force||state.weatherV113.status!=='ready')await v113RefreshWeather(force);
   const w=state.weatherV113;
   const pop=document.createElement('div');pop.id='v113WeatherPopover';pop.className='v113-weather-popover';
-  const temp=Number.isFinite(Number(w.temperature))?`${Math.round(Number(w.temperature))}°C`:'--';
-  const apparent=Number.isFinite(Number(w.apparent))?`${Math.round(Number(w.apparent))}°C`:'--';
+  const hasTemp=w.temperature!=null&&Number.isFinite(Number(w.temperature));
+  const hasApparent=w.apparent!=null&&Number.isFinite(Number(w.apparent));
+  const temp=hasTemp?`${Math.round(Number(w.temperature))}°C`:'--';
+  const apparent=hasApparent?`${Math.round(Number(w.apparent))}°C`:'--';
   const updated=w.updatedAt?new Date(w.updatedAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'--:--';
   pop.innerHTML=w.status==='ready'?`<div class="v113-weather-pop-head"><span class="v113-weather-big ${v113WeatherTone(w.code,w.isDay)}">${v113WeatherGlyph(w.code,w.isDay,29)}</span><div><small>CLIMA AGORA</small><strong>${temp}</strong></div></div><p>${esc(v113WeatherDescription(w.code))}</p><div class="v113-weather-details"><span>Sensação <b>${apparent}</b></span><span>Atualizado <b>${updated}</b></span></div><button type="button" data-weather-refresh>Atualizar</button>`:`<div class="v113-weather-error"><strong>Clima local</strong><p>${esc(w.error||'Toque em atualizar e permita o acesso à localização.')}</p><button type="button" data-weather-refresh>Ativar / atualizar</button></div>`;
   document.body.append(pop);
