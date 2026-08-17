@@ -1,7 +1,9 @@
-/* Ticket. 1.0.21 — câmera centralizada, ampla e sem barras pretas */
+/* Ticket. 1.0.22 — câmera centralizada, ampla e sem barras pretas */
 'use strict';
 
 (function(){
+  const CAMERA_MAX_WIDTH='680px';
+
   function syncCameraRatio(){
     const stage=document.querySelector('#cameraStage');
     if(!stage) return;
@@ -14,10 +16,10 @@
     const h=Number(source.videoHeight||source.naturalHeight||0);
     if(!(w>0&&h>0)) return;
 
-    /* O palco passa a ter exatamente a mesma proporção da fonte.
-       Com object-fit:cover não haverá barras nem corte, porque as proporções coincidem. */
+    /* Aumenta somente a área disponível. A altura continua sendo calculada
+       pela proporção real da fonte, portanto não há corte nem deformação. */
     stage.style.width='100%';
-    stage.style.maxWidth='620px';
+    stage.style.maxWidth=CAMERA_MAX_WIDTH;
     stage.style.height='auto';
     stage.style.aspectRatio=`${w}/${h}`;
     stage.style.marginLeft='auto';
