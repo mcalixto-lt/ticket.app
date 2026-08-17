@@ -1,8 +1,8 @@
-/* Ticket. 1.0.20 — versão e organização final das configurações */
+/* Ticket. 1.0.22 — versão e organização final das configurações */
 'use strict';
 
 (function(){
-  const VERSION='1.0.20';
+  const VERSION='1.0.22';
 
   function settingsRoot(){
     return document.querySelector('.settings-full');
@@ -30,7 +30,6 @@
     const stack=root.querySelector('.settings-stack');
     if(!stack) return;
 
-    /* Remove qualquer versão criada por uma execução anterior para evitar duplicação. */
     root.querySelectorAll('#v119-system-version').forEach(el=>el.remove());
 
     let finalGrid=root.querySelector('.v119-settings-final-grid');
@@ -44,7 +43,6 @@
     const account=findCardByTitle(root,['sessão da conta']);
     const reset=findCardByTitle(root,['redefinir instalação']);
 
-    /* Os cards originais saem do grid antigo. */
     [install,account,reset].forEach(card=>{
       if(card&&card.parentElement!==finalGrid) card.remove();
     });
@@ -65,11 +63,9 @@
         <span class="settings-card-icon purple">✓</span>
       </div>`;
 
-    /* Ordem EXATA solicitada: Versão do Ticket. → Definir Instalação → Sessão da Conta. */
     const ordered=[version,install,account].filter(Boolean);
     ordered.forEach(card=>finalGrid.appendChild(card));
 
-    /* Redefinir instalação continua disponível, mas fica depois do grupo solicitado. */
     if(reset){
       let resetGrid=root.querySelector('.v119-reset-grid');
       if(!resetGrid){
@@ -80,7 +76,6 @@
       resetGrid.appendChild(reset);
     }
 
-    /* Renomeia a instalação para exatamente o texto pedido. */
     if(install){
       const heading=install.querySelector('h3');
       if(heading) heading.textContent='Definir Instalação';
