@@ -24,6 +24,9 @@
   function ensureFinalSettingsOrder(){
     const root=settingsRoot();
     if(!root) return;
+    /* A partir da 1.0.22, o controle de versão é atualizado pelo módulo
+       v121. Não reescreva o card para não remover o botão de atualização. */
+    if(root.querySelector('.v121-version-card')) return;
     const stack=root.querySelector('.settings-stack');
     if(!stack) return;
 
