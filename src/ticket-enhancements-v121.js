@@ -1,11 +1,11 @@
-/* Ticket. 1.0.24 — camada final consolidada */
+/* Ticket. 1.0.25 — camada final consolidada */
 'use strict';
 
 (function(){
-  const APP_VERSION='1.0.24';
+  const APP_VERSION='1.0.25';
   const VERSION_URL='./public/version.json';
   const CAMERA_WIDTH=636;
-  const CAMERA_HEIGHT=695;
+  const CAMERA_HEIGHT=595;
   let checking=false;
 
   function escVersion(value=''){
@@ -39,7 +39,7 @@
 
     /*
       Não usamos a proporção da câmera para dimensionar o container.
-      O container agora tem exatamente 636 x 695 px e fica centralizado.
+      O container agora tem exatamente 636 x 595 px e fica centralizado.
       Isso evita que scripts anteriores alterem a posição ou a altura.
     */
     stage.style.width=`min(${CAMERA_WIDTH}px, 100%)`;

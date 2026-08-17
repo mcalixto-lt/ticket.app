@@ -1,0 +1,12 @@
+Ticket. — Atualização v1.0.25
+
+Alterações desta atualização:
+1. Quadro da câmera: largura mantida em 636 px.
+2. Quadro da câmera: altura alterada de 695 px para 595 px.
+3. Quadro permanece centralizado horizontalmente.
+4. Vídeo/imagem continuam usando object-fit: cover e object-position: center center, sem barras pretas.
+5. Versão do sistema atualizada para 1.0.25.
+6. Cache-busting atualizado para v123 para evitar carregar camadas antigas do navegador/Service Worker.
+7. Service Worker atualizado para ticket-app-v123.
+
+Nenhuma imagem/foto foi gerada nesta atualização.

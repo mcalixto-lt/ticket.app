@@ -1,4 +1,4 @@
-/* Ticket. 1.0.24 — camada final: câmera e versão do sistema */
+/* Ticket. 1.0.25 — camada final: câmera e versão do sistema */
 .v121-version-card .settings-card-head{
   align-items:flex-start!important;
 }
@@ -47,7 +47,7 @@
 /*
   CÂMERA — MEDIDAS FINAIS
   Largura fixa de referência: 636 px
-  Altura fixa: 695 px
+  Altura fixa: 595 px
   A largura não é aumentada. Em telas menores, ela apenas se adapta à largura
   disponível para não criar overflow horizontal.
 */
@@ -55,9 +55,9 @@
 .v116-main-capture-card #cameraStage{
   width:min(636px,100%)!important;
   max-width:636px!important;
-  height:695px!important;
-  min-height:695px!important;
-  max-height:695px!important;
+  height:595px!important;
+  min-height:595px!important;
+  max-height:595px!important;
   aspect-ratio:auto!important;
   margin-left:auto!important;
   margin-right:auto!important;
@@ -123,15 +123,15 @@
 @media(max-width:760px){
   /*
     A largura continua centralizada e limitada a 636 px.
-    A altura permanece 695 px, conforme solicitado.
+    A altura permanece 595 px, conforme solicitado.
   */
   #cameraStage.v105-camera-frame,
   .v116-main-capture-card #cameraStage{
     width:min(636px,100%)!important;
     max-width:636px!important;
-    height:695px!important;
-    min-height:695px!important;
-    max-height:695px!important;
+    height:595px!important;
+    min-height:595px!important;
+    max-height:595px!important;
     margin-left:auto!important;
     margin-right:auto!important;
     margin-inline:auto!important;
