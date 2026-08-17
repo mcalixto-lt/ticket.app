@@ -1,12 +1,13 @@
-/* Ticket. 1.0.21 — câmera centralizada, ampla e sem barras pretas */
+/* Ticket. 1.0.22 — câmera centralizada, ampla e sem barras pretas */
 'use strict';
 
-/* O palco usa a proporção real da fonte. Assim a imagem inteira aparece,
-   sem barras laterais e sem deformar/cortar a fotografia. */
+/* Mantém a proporção real da fonte. A largura máxima sobe levemente para
+   aproveitar melhor a área disponível e, por consequência, aumentar a altura
+   sem cortar, esticar ou criar barras pretas. */
 #cameraStage.v105-camera-frame,
 .v116-main-capture-card #cameraStage{
   width:100%!important;
-  max-width:620px!important;
+  max-width:680px!important;
   height:auto!important;
   min-height:0!important;
   aspect-ratio:4/3!important;
@@ -45,7 +46,7 @@
   #cameraStage.v105-camera-frame,
   .v116-main-capture-card #cameraStage{
     width:100%!important;
-    max-width:620px!important;
+    max-width:680px!important;
     aspect-ratio:4/3!important;
     margin-inline:auto!important;
   }
