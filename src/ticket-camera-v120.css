@@ -1,19 +1,21 @@
-/* Ticket. 1.0.22 — câmera centralizada, ampla e sem barras pretas */
+/* Ticket. 1.0.23 — câmera maior, centralizada e sem barras pretas */
 'use strict';
 
-/* Mantém a proporção real da fonte. A largura máxima sobe levemente para
-   aproveitar melhor a área disponível e, por consequência, aumentar a altura
-   sem cortar, esticar ou criar barras pretas. */
+/*
+   A área do preview ocupa também o espaço lateral interno do card.
+   Isso aumenta a largura e, mantendo a proporção real da fonte, aumenta
+   a altura sem esticar, deformar ou criar barras pretas.
+*/
 #cameraStage.v105-camera-frame,
 .v116-main-capture-card #cameraStage{
-  width:100%!important;
-  max-width:680px!important;
+  width:calc(100% + 48px)!important;
+  max-width:728px!important;
   height:auto!important;
   min-height:0!important;
   aspect-ratio:4/3!important;
-  margin-left:auto!important;
-  margin-right:auto!important;
-  margin-inline:auto!important;
+  margin-left:-24px!important;
+  margin-right:-24px!important;
+  margin-inline:0!important;
   overflow:hidden!important;
   position:relative!important;
   background:transparent!important;
@@ -45,9 +47,11 @@
 @media(max-width:760px){
   #cameraStage.v105-camera-frame,
   .v116-main-capture-card #cameraStage{
-    width:100%!important;
-    max-width:680px!important;
+    width:calc(100% + 48px)!important;
+    max-width:728px!important;
     aspect-ratio:4/3!important;
-    margin-inline:auto!important;
+    margin-left:-24px!important;
+    margin-right:-24px!important;
+    margin-inline:0!important;
   }
 }
