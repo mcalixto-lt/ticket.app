@@ -1,13 +1,30 @@
-/* Ticket. 1.0.22 — versão dinâmica e atualização manual */
+/* Ticket. 1.0.23 — versão dinâmica e verificação real de atualizações */
 'use strict';
 
 (function(){
-  const APP_VERSION='1.0.22';
+  const APP_VERSION='1.0.23';
   const VERSION_URL='./public/version.json';
   let checking=false;
 
   function escVersion(value=''){
     return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  }
+
+  function normalizeVersion(value){
+    const match=String(value??'').trim().replace(/^v/i,'').match(/^(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:[-+].*)?$/);
+    if(!match)return null;
+    return [Number(match[1]||0),Number(match[2]||0),Number(match[3]||0)];
+  }
+
+  function compareVersions(a,b){
+    const av=normalizeVersion(a);
+    const bv=normalizeVersion(b);
+    if(!av||!bv)return null;
+    for(let i=0;i<3;i++){
+      if(av[i]>bv[i])return 1;
+      if(av[i]<bv[i])return -1;
+    }
+    return 0;
   }
 
   function versionCard(){
@@ -57,14 +74,23 @@
     }
   }
 
-  async function forceReload(statusEl){
+  async function forceReload(statusEl,latest){
     if(statusEl){
       statusEl.className='v121-update-status success';
-      statusEl.textContent='Atualização preparada. Recarregando o Ticket.…';
+      statusEl.textContent=`Nova versão ${escVersion(latest)} encontrada. Atualizando o Ticket.…`;
     }
     await refreshServiceWorker();
     await clearCaches();
     setTimeout(()=>location.reload(),180);
+  }
+
+  function resetUpdateButton(){
+    const button=document.querySelector('#ticketCheckUpdates');
+    if(!button)return;
+    button.disabled=false;
+    button.classList.remove('is-checking');
+    const label=button.querySelector('span');
+    if(label)label.textContent='Procurar atualizações';
   }
 
   async function checkForUpdates(){
@@ -75,7 +101,8 @@
     if(button){
       button.disabled=true;
       button.classList.add('is-checking');
-      button.querySelector('span').textContent='Procurando…';
+      const label=button.querySelector('span');
+      if(label)label.textContent='Procurando…';
     }
     if(status){
       status.className='v121-update-status';
@@ -90,31 +117,36 @@
       });
       if(!response.ok)throw new Error(`HTTP ${response.status}`);
       const remote=await response.json();
-      const latest=String(remote?.version||APP_VERSION);
+      const latest=String(remote?.version||'').trim();
+      const comparison=compareVersions(latest,APP_VERSION);
 
-      if(latest!==APP_VERSION){
-        if(status){
-          status.className='v121-update-status success';
-          status.textContent=`Nova versão ${latest} encontrada. Atualizando…`;
-        }
-        await forceReload(status);
+      if(comparison===null){
+        throw new Error('Versão publicada inválida.');
+      }
+
+      if(comparison>0){
+        /* Só limpa cache e recarrega quando existe uma versão realmente nova. */
+        await forceReload(status,latest);
         return;
       }
 
-      /* Mesmo quando não há versão nova, o botão força uma nova leitura dos
-         arquivos publicados, limpando o cache local antes de recarregar. */
-      await forceReload(status);
+      /*
+         Não existe atualização necessária. Neste caso NÃO limpamos cache,
+         NÃO atualizamos o Service Worker e NÃO recarregamos a página.
+      */
+      if(status){
+        status.className='v121-update-status';
+        status.textContent=`Você já está na versão mais recente: Ticket. ${escVersion(APP_VERSION)}.`;
+      }
+      resetUpdateButton();
+      checking=false;
     }catch(error){
       console.error('Ticket. atualização:',error);
       if(status){
         status.className='v121-update-status warning';
         status.textContent='Não foi possível verificar agora. Tente novamente.';
       }
-      if(button){
-        button.disabled=false;
-        button.classList.remove('is-checking');
-        button.querySelector('span').textContent='Procurar atualizações';
-      }
+      resetUpdateButton();
       checking=false;
     }
   }
