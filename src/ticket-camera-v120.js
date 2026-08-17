@@ -1,8 +1,10 @@
-/* Ticket. 1.0.22 — câmera centralizada, ampla e sem barras pretas */
+/* Ticket. 1.0.23 — câmera maior, centralizada e sem barras pretas */
 'use strict';
 
 (function(){
-  const CAMERA_MAX_WIDTH='680px';
+  const CAMERA_MAX_WIDTH='728px';
+  const CAMERA_EXTRA_WIDTH='48px';
+  const CAMERA_SIDE_OFFSET='-24px';
 
   function syncCameraRatio(){
     const stage=document.querySelector('#cameraStage');
@@ -16,15 +18,18 @@
     const h=Number(source.videoHeight||source.naturalHeight||0);
     if(!(w>0&&h>0)) return;
 
-    /* Aumenta somente a área disponível. A altura continua sendo calculada
-       pela proporção real da fonte, portanto não há corte nem deformação. */
-    stage.style.width='100%';
+    /*
+       Expande a área lateralmente dentro do card. Como a altura continua
+       sendo calculada pela proporção real da câmera, a imagem permanece
+       proporcional, sem deformação e sem barras pretas.
+    */
+    stage.style.width=`calc(100% + ${CAMERA_EXTRA_WIDTH})`;
     stage.style.maxWidth=CAMERA_MAX_WIDTH;
     stage.style.height='auto';
     stage.style.aspectRatio=`${w}/${h}`;
-    stage.style.marginLeft='auto';
-    stage.style.marginRight='auto';
-    stage.style.marginInline='auto';
+    stage.style.marginLeft=CAMERA_SIDE_OFFSET;
+    stage.style.marginRight=CAMERA_SIDE_OFFSET;
+    stage.style.marginInline='0';
 
     source.style.width='100%';
     source.style.height='100%';
