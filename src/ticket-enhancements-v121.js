@@ -1,11 +1,15 @@
-/* Ticket. 1.0.25 — camada final consolidada */
+/* Ticket. 1.0.26 — câmera e verificação de atualizações */
 'use strict';
 
 (function(){
-  const APP_VERSION='1.0.25';
-  const VERSION_URL='./public/version.json';
+  const APP_VERSION='1.0.26';
+  const VERSION_SOURCES=[
+    ()=>`https://raw.githubusercontent.com/mcalixto-lt/ticket.app/main/public/version.json?check=${Date.now()}`,
+    ()=>new URL('./version.json',window.location.href).href,
+    ()=>new URL('./public/version.json',window.location.href).href
+  ];
   const CAMERA_WIDTH=636;
-  const CAMERA_HEIGHT=595;
+  const CAMERA_HEIGHT=500;
   let checking=false;
 
   function escVersion(value=''){
@@ -39,7 +43,7 @@
 
     /*
       Não usamos a proporção da câmera para dimensionar o container.
-      O container agora tem exatamente 636 x 595 px e fica centralizado.
+      O container agora tem exatamente 636 x 500 px e fica centralizado.
       Isso evita que scripts anteriores alterem a posição ou a altura.
     */
     stage.style.width=`min(${CAMERA_WIDTH}px, 100%)`;
@@ -201,6 +205,33 @@
     }
   }
 
+  async function fetchPublishedVersion(){
+    let lastError=null;
+    for(const makeUrl of VERSION_SOURCES){
+      try{
+        const url=makeUrl();
+        const response=await fetch(url,{
+          method:'GET',
+          cache:'no-store',
+          credentials:'omit',
+          headers:{'Accept':'application/json','Cache-Control':'no-cache','Pragma':'no-cache'}
+        });
+        if(!response.ok)throw new Error(`HTTP ${response.status}`);
+        const contentType=(response.headers.get('content-type')||'').toLowerCase();
+        const text=await response.text();
+        if(contentType.includes('text/html')||/^\s*<!doctype html/i.test(text))throw new Error('O servidor devolveu HTML em vez do arquivo de versão.');
+        const data=JSON.parse(text);
+        const version=String(data?.version||'').trim();
+        if(!normalizeVersion(version))throw new Error('Versão publicada inválida.');
+        return {version,source:url};
+      }catch(error){
+        lastError=error;
+        console.warn('Ticket. versão: fonte indisponível',makeUrl.toString(),error);
+      }
+    }
+    throw lastError||new Error('Nenhuma fonte de versão disponível.');
+  }
+
   async function forceReload(statusEl,latest){
     if(statusEl){
       statusEl.className='v121-update-status success';
@@ -208,7 +239,7 @@
     }
     await refreshServiceWorker();
     await clearCaches();
-    setTimeout(()=>location.reload(),180);
+    setTimeout(()=>location.reload(),220);
   }
 
   function resetUpdateButton(){
@@ -235,22 +266,15 @@
     }
     if(status){
       status.className='v121-update-status';
-      status.textContent='Verificando a versão mais recente…';
+      status.textContent='Procurando uma versão publicada…';
     }
 
     try{
-      const response=await fetch(`${VERSION_URL}?check=${Date.now()}`,{
-        method:'GET',
-        cache:'no-store',
-        headers:{'Cache-Control':'no-cache','Pragma':'no-cache'}
-      });
-      if(!response.ok)throw new Error(`HTTP ${response.status}`);
-
-      const remote=await response.json();
-      const latest=String(remote?.version||'').trim();
+      const published=await fetchPublishedVersion();
+      const latest=published.version;
       const comparison=compareVersions(latest,APP_VERSION);
 
-      if(comparison===null)throw new Error('Versão publicada inválida.');
+      if(comparison===null)throw new Error('Não foi possível comparar as versões.');
 
       if(comparison>0){
         await forceReload(status,latest);
@@ -258,8 +282,8 @@
       }
 
       /*
-        Se a versão publicada for igual ou inferior:
-        NÃO recarrega, NÃO limpa cache e NÃO atualiza o Service Worker.
+        Versão igual ou inferior: somente informa o resultado.
+        NÃO recarrega, NÃO limpa cache e NÃO força atualização.
       */
       if(status){
         status.className='v121-update-status success';
@@ -271,7 +295,7 @@
       console.error('Ticket. atualização:',error);
       if(status){
         status.className='v121-update-status warning';
-        status.textContent='Não foi possível verificar agora. Tente novamente.';
+        status.textContent='Não foi possível verificar a atualização agora. Verifique sua conexão e tente novamente.';
       }
       resetUpdateButton();
       checking=false;
