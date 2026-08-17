@@ -4,7 +4,7 @@ services:
     runtime: static
     branch: main
     autoDeployTrigger: commit
-    buildCommand: "echo Ticket.app 1.0.26 - static site"
+    buildCommand: "echo Ticket.app 1.0.27 - static site"
     staticPublishPath: .
     routes:
       - type: rewrite
