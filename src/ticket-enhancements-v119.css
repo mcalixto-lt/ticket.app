@@ -1,35 +1,73 @@
-/* Ticket. 1.0.19 — câmera centralizada/larga e ajustes de configurações */
+/* Ticket. 1.0.20 — câmera realmente sem faixas e ajustes finais de configurações */
 
-/* Mantém o mesmo esquema da câmera, remove a aparência estreita/deslocada e centraliza o preview. */
+/* CÂMERA: o palco passa a acompanhar a proporção real da imagem/vídeo.
+   Isso elimina as faixas pretas sem mudar o esquema, os controles ou o enquadramento. */
 #cameraStage.v105-camera-frame,
 .v116-main-capture-card #cameraStage{
-  width:min(100%, 340px)!important;
-  max-width:340px!important;
+  width:min(100%, 520px)!important;
+  max-width:520px!important;
+  height:auto!important;
+  min-height:0!important;
+  aspect-ratio:auto!important;
+  margin-inline:auto!important;
   margin-left:auto!important;
   margin-right:auto!important;
-  margin-inline:auto!important;
   overflow:hidden!important;
-  min-height:0!important;
+  position:relative!important;
+  background:transparent!important;
 }
 
 #cameraStage video,
 #cameraStage img{
+  display:block!important;
   width:100%!important;
-  height:100%!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
   max-width:none!important;
   max-height:none!important;
+  aspect-ratio:auto!important;
   object-fit:contain!important;
   object-position:center center!important;
   background:transparent!important;
-  display:block!important;
+  margin:0 auto!important;
 }
 
-/* A última parte das configurações mantém uma ordem estável e legível. */
-.v119-settings-order-anchor{display:block}
+/* Quando a câmera ainda não informou as dimensões, mantém um enquadramento
+   limpo e centralizado; assim que loadedmetadata ocorrer, o JS ajusta a altura. */
+#cameraStage:has(#cameraVideo:not(.hidden)){
+  width:min(100%, 520px)!important;
+}
+
+/* O overlay dos quatro cantos continua preso ao palco da câmera. */
+#cameraStage .corner{position:absolute!important;z-index:5!important;pointer-events:none!important;}
+
+/* CONFIGURAÇÕES: grupo final na ordem solicitada. */
+.v119-settings-final-grid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:14px!important;
+  width:100%!important;
+}
+.v119-settings-final-grid .settings-section-card{margin:0!important;min-width:0!important;}
+.v119-version-card .settings-card-head{align-items:flex-start;}
+.v119-version-card .v119-version-number{display:block;margin-top:5px;font-size:1.18rem;font-weight:900;letter-spacing:-.02em;}
+.v119-version-card .v119-version-help{display:block;margin-top:5px;line-height:1.45;}
+
+@media(max-width:900px){
+  .v119-settings-final-grid{grid-template-columns:1fr!important;}
+}
+
 @media(max-width:760px){
   #cameraStage.v105-camera-frame,
   .v116-main-capture-card #cameraStage{
-    width:min(100%, 340px)!important;
-    max-width:340px!important;
+    width:min(100%, 520px)!important;
+    max-width:520px!important;
+    height:auto!important;
+  }
+  #cameraStage video,
+  #cameraStage img{
+    width:100%!important;
+    height:auto!important;
   }
 }
