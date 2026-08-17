@@ -1,0 +1,35 @@
+/* Ticket. 1.0.19 — câmera centralizada/larga e ajustes de configurações */
+
+/* Mantém o mesmo esquema da câmera, remove a aparência estreita/deslocada e centraliza o preview. */
+#cameraStage.v105-camera-frame,
+.v116-main-capture-card #cameraStage{
+  width:min(100%, 340px)!important;
+  max-width:340px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  margin-inline:auto!important;
+  overflow:hidden!important;
+  min-height:0!important;
+}
+
+#cameraStage video,
+#cameraStage img{
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  background:transparent!important;
+  display:block!important;
+}
+
+/* A última parte das configurações mantém uma ordem estável e legível. */
+.v119-settings-order-anchor{display:block}
+@media(max-width:760px){
+  #cameraStage.v105-camera-frame,
+  .v116-main-capture-card #cameraStage{
+    width:min(100%, 340px)!important;
+    max-width:340px!important;
+  }
+}
