@@ -1,2 +1,16 @@
 /* Ticket. 1.0.17 — preview da câmera sem faixas pretas */
 'use strict';
+
+/* Ocupa toda a área disponível do preview sem alterar o container, controles ou enquadramento externo. */
+.v105-camera-frame video,
+.v105-camera-frame img,
+.v116-main-capture-card .v105-camera-frame video,
+.v116-main-capture-card .v105-camera-frame img{
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  background:transparent!important;
+}
