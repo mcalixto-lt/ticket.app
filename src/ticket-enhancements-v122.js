@@ -1,8 +1,8 @@
-/* Ticket. 1.0.27 — câmera e verificação de atualizações */
+/* Ticket. 1.0.28 — câmera e verificação de atualizações */
 'use strict';
 
 (function(){
-  const APP_VERSION='1.0.27';
+  const APP_VERSION='1.0.28';
   const VERSION_SOURCES=[
     {label:'GitHub Raw',makeUrl:()=>`https://raw.githubusercontent.com/mcalixto-lt/ticket.app/main/public/version.json?check=${Date.now()}`,remote:true},
     {label:'GitHub Raw alternativo',makeUrl:()=>`https://github.com/mcalixto-lt/ticket.app/raw/refs/heads/main/public/version.json?check=${Date.now()}`,remote:true},

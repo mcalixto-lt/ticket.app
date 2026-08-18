@@ -66,7 +66,10 @@ function v116EnvironmentCard(){
     ${state.receiptFile&&!isEnvironment?`<div class="v116-environment-empty ready"><span>${v105CameraGlyph(24)}</span><div><strong>Foto disponível</strong><small>Na opção acima, escolha “Foto do ambiente” para preparar esta imagem.</small></div></div>`:''}
     ${isEnvironment&&state.environmentUrl?`<div class="v106-environment-preview v116-environment-preview"><img src="${state.environmentUrl}" alt="Foto do ambiente com marca d'água" draggable="false"><small>Marca d'água aplicada${environmentTime?`: ${esc(environmentTime)}`:''}</small></div>`:''}
     ${isEnvironment?`<label class="field v106-environment-note v116-environment-note"><span>Observação do ambiente</span><textarea id="environmentNoteV116" placeholder="Opcional — descreva alguma ocorrência ou informação importante.">${esc(state.environmentNote||'')}</textarea></label>
-    <button id="registerEnvironmentV116" type="button" class="v115-env-register v116-register-environment" ${state.environmentFile?'':'disabled'}>Registrar</button>`:''}
+    <div class="v116-environment-actions">
+      <button id="registerEnvironmentV116" type="button" class="v115-env-register v116-register-environment" ${state.environmentFile?'':'disabled'}>Registrar</button>
+      <button id="cancelEnvironmentV116" type="button" class="v116-cancel-environment">Cancelar</button>
+    </div>`:''}
   </article>`;
 }
 
@@ -117,6 +120,12 @@ async function v116ChooseDestination(destination){
     v106BlobUrlReplace('environmentUrl',marked.blob);
     renderView();
   }
+}
+
+function v116CancelEnvironment(){
+  v116ResetCaptureState();
+  toast('Foto cancelada. A captura foi descartada.');
+  renderView();
 }
 
 async function v116SaveEnvironment(){
@@ -195,6 +204,7 @@ bindCapture=function(){
   document.querySelectorAll('[data-photo-mode]').forEach(btn=>btn.addEventListener('click',async()=>{await v106ApplyReceiptMode(btn.dataset.photoMode,true);}));
   document.querySelector('#environmentNoteV116')?.addEventListener('input',e=>{state.environmentNote=e.target.value;});
   document.querySelector('#registerEnvironmentV116')?.addEventListener('click',v116SaveEnvironment);
+  document.querySelector('#cancelEnvironmentV116')?.addEventListener('click',v116CancelEnvironment);
   document.querySelector('#informDateTimeV105')?.addEventListener('click',()=>{document.querySelector('#captureInfoV105')?.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>document.querySelector('#captureDateV105')?.focus({preventScroll:true}),350);});
   const form=document.querySelector('#captureForm');
   if(form){

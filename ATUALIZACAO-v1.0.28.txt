@@ -1,0 +1,9 @@
+Ticket. — Atualização v1.0.28
+
+Alterações desta atualização:
+1. Adicionado o botão “Cancelar” ao lado de “Registrar” na seção Registrar ambiente.
+2. O botão Cancelar desfaz a captura atual do ambiente e descarta a fotografia preparada, retornando a tela para uma nova captura.
+3. Os botões Registrar e Cancelar ficam alinhados horizontalmente, com espaçamento curto e visual consistente com o Glassmorphism do sistema.
+4. Mantida a câmera em 636 px de largura por 500 px de altura.
+5. Mantida a verificação profissional de atualizações, agora apontando para a versão 1.0.28.
+6. Cache-busting atualizado para v126 e Service Worker para ticket-app-v126.
