@@ -1,16 +1,16 @@
-const CACHE = 'ticket-app-v132';
+const CACHE = 'ticket-app-v134';
 const CORE = [
-  '/', '/index.html', '/app.js?v=132', '/src/styles.css?v=132', '/src/mobile-auth.css?v=132',
-  '/src/settings-capture-v103.css?v=132', '/src/ticket-enhancements-v103.js?v=132', '/src/ticket-fixes-v104.css?v=132', '/src/ticket-fixes-v104.js?v=132',
-  '/src/ticket-enhancements-v105.css?v=132', '/src/ticket-enhancements-v105.js?v=132', '/src/ticket-hotfix-v105.js?v=132',
-  '/src/ticket-enhancements-v106.css?v=132', '/src/ticket-enhancements-v106.js?v=132', '/src/ticket-enhancements-v107.css?v=132', '/src/ticket-enhancements-v107.js?v=132',
-  '/src/ticket-ai-v108.js?v=132', '/src/ticket-ai-v109.js?v=132', '/src/ticket-ai-v110.js?v=132', '/src/ticket-enhancements-v111.css?v=132', '/src/ticket-enhancements-v111.js?v=132', '/src/ticket-ai-v111.js?v=132',
-  '/src/ticket-enhancements-v112.css?v=132', '/src/ticket-enhancements-v112.js?v=132', '/src/ticket-enhancements-v113.css?v=132', '/src/ticket-enhancements-v113.js?v=132',
-  '/src/ticket-enhancements-v114.css?v=132', '/src/ticket-enhancements-v114.js?v=132', '/src/ticket-enhancements-v115.css?v=132', '/src/ticket-enhancements-v115.js?v=132',
-  '/src/ticket-enhancements-v116.css?v=132', '/src/ticket-enhancements-v116.js?v=132',
-  '/src/ticket-enhancements-v123.css?v=132', '/src/ticket-enhancements-v123.js?v=132',
-  '/src/ticket-settings-v130.css?v=132', '/src/ticket-settings-v130.js?v=132',
-  '/version.json', '/public/version.json', '/public/manifest.webmanifest?v=132', '/public/app-icon-v113.svg?v=132', '/public/app-icon-maskable-v113.svg?v=132', '/public/favicon.svg'
+  '/', '/index.html', '/app.js?v=134', '/src/styles.css?v=134', '/src/mobile-auth.css?v=134',
+  '/src/settings-capture-v103.css?v=134', '/src/ticket-enhancements-v103.js?v=134', '/src/ticket-fixes-v104.css?v=134', '/src/ticket-fixes-v104.js?v=134',
+  '/src/ticket-enhancements-v105.css?v=134', '/src/ticket-enhancements-v105.js?v=134', '/src/ticket-hotfix-v105.js?v=134',
+  '/src/ticket-enhancements-v106.css?v=134', '/src/ticket-enhancements-v106.js?v=134', '/src/ticket-enhancements-v107.css?v=134', '/src/ticket-enhancements-v107.js?v=134',
+  '/src/ticket-ai-v108.js?v=134', '/src/ticket-ai-v109.js?v=134', '/src/ticket-ai-v110.js?v=134', '/src/ticket-enhancements-v111.css?v=134', '/src/ticket-enhancements-v111.js?v=134', '/src/ticket-ai-v111.js?v=134',
+  '/src/ticket-enhancements-v112.css?v=134', '/src/ticket-enhancements-v112.js?v=134', '/src/ticket-enhancements-v113.css?v=134', '/src/ticket-enhancements-v113.js?v=134',
+  '/src/ticket-enhancements-v114.css?v=134', '/src/ticket-enhancements-v114.js?v=134', '/src/ticket-enhancements-v115.css?v=134', '/src/ticket-enhancements-v115.js?v=134',
+  '/src/ticket-enhancements-v116.css?v=134', '/src/ticket-enhancements-v116.js?v=134',
+  '/src/ticket-enhancements-v123.css?v=134', '/src/ticket-enhancements-v123.js?v=134',
+  '/src/ticket-settings-v130.css?v=134', '/src/ticket-settings-v130.js?v=134',
+  '/public/version.json', '/public/manifest.webmanifest?v=134', '/public/app-icon-v113.svg?v=134', '/public/app-icon-maskable-v113.svg?v=134', '/public/favicon.svg'
 ];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)));await self.clients.claim();})());});
