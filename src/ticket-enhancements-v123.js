@@ -1,12 +1,12 @@
-/* Ticket. 1.0.33 — correção de cache mobile */
+/* Ticket. 1.0.34 — atualização segura e verificação de versão */
 'use strict';
 
 (function(){
-  const APP_VERSION='1.0.32';
+  const APP_VERSION='1.0.34';
   const VERSION_SOURCES=[
-    {label:'jsDelivr',makeUrl:()=>`https://cdn.jsdelivr.net/gh/mcalixto-lt/ticket.app@main/version.json?check=${Date.now()}`,remote:true,kind:'json'},
-    {label:'GitHub Raw',makeUrl:()=>`https://raw.githubusercontent.com/mcalixto-lt/ticket.app/main/version.json?check=${Date.now()}`,remote:true,kind:'json'},
-    {label:'GitHub API',makeUrl:()=>`https://api.github.com/repos/mcalixto-lt/ticket.app/contents/version.json?ref=main&check=${Date.now()}`,remote:true,kind:'github-api'}
+    {label:'Servidor do Ticket.',makeUrl:()=>`./public/version.json?check=${Date.now()}`,kind:'json'},
+    {label:'GitHub Raw',makeUrl:()=>`https://raw.githubusercontent.com/mcalixto-lt/ticket.app/main/public/version.json?check=${Date.now()}`,kind:'json'},
+    {label:'jsDelivr',makeUrl:()=>`https://cdn.jsdelivr.net/gh/mcalixto-lt/ticket.app@main/public/version.json?check=${Date.now()}`,kind:'json'}
   ];
 
   const CAMERA_WIDTH=636;
@@ -33,10 +33,7 @@
     return 0;
   }
 
-  /* ---------- CÂMERA FINAL ---------- */
-  function cameraStage(){
-    return document.querySelector('#cameraStage');
-  }
+  function cameraStage(){ return document.querySelector('#cameraStage'); }
 
   function applyCameraDimensions(){
     const stage=cameraStage();
@@ -52,17 +49,9 @@
     stage.style.marginInline='auto';
     stage.style.position='relative';
     stage.style.overflow='hidden';
-    const sources=stage.querySelectorAll('video,img');
-    sources.forEach(source=>{
-      source.style.width='100%';
-      source.style.height='100%';
-      source.style.minWidth='0';
-      source.style.minHeight='0';
-      source.style.maxWidth='none';
-      source.style.maxHeight='none';
-      source.style.objectFit='cover';
-      source.style.objectPosition='center center';
-      source.style.margin='0';
+    stage.querySelectorAll('video,img').forEach(source=>{
+      source.style.width='100%'; source.style.height='100%'; source.style.minWidth='0'; source.style.minHeight='0';
+      source.style.maxWidth='none'; source.style.maxHeight='none'; source.style.objectFit='cover'; source.style.objectPosition='center center'; source.style.margin='0';
     });
   }
 
@@ -77,81 +66,40 @@
     [0,50,150,350,700,1200].forEach(ms=>setTimeout(applyCameraDimensions,ms));
   }
 
-  /* ---------- CONFIGURAÇÕES: ORDEM FINAL ---------- */
-  function settingsRoot(){
-    return document.querySelector('.settings-full');
-  }
+  function settingsRoot(){ return document.querySelector('.settings-full'); }
+  function textOf(el){ return String(el?.textContent||'').replace(/\s+/g,' ').trim().toLowerCase(); }
 
-  function textOf(el){
-    return String(el?.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
-  }
-
-  function findCardByTitle(root, terms){
+  function findCardByTitle(root,terms){
     const cards=[...root.querySelectorAll('.settings-section-card')];
-    return cards.find(card=>{
-      const heading=card.querySelector('h3');
-      const text=textOf(heading||card);
-      return terms.some(term=>text.includes(term));
-    })||null;
+    return cards.find(card=>terms.some(term=>textOf(card.querySelector('h3')||card).includes(term)))||null;
   }
 
   function ensureFinalSettingsOrder(){
-    const root=settingsRoot();
-    if(!root)return;
-    const stack=root.querySelector('.settings-stack');
-    if(!stack)return;
-
+    const root=settingsRoot(); if(!root)return;
+    const stack=root.querySelector('.settings-stack'); if(!stack)return;
     let finalGrid=root.querySelector('.v122-settings-final-grid');
-    if(!finalGrid){
-      finalGrid=document.createElement('div');
-      finalGrid.className='v122-settings-final-grid';
-      stack.appendChild(finalGrid);
-    }
-
+    if(!finalGrid){ finalGrid=document.createElement('div'); finalGrid.className='v122-settings-final-grid'; stack.appendChild(finalGrid); }
     let version=finalGrid.querySelector('.v121-version-card');
-    if(!version){
-      version=document.createElement('article');
-      version.className='settings-section-card compact-setting-card v121-version-card';
-    }
-
+    if(!version){ version=document.createElement('article'); version.className='settings-section-card compact-setting-card v121-version-card'; }
     const install=findCardByTitle(root,['instalação no celular','definir instalação']);
     const account=findCardByTitle(root,['sessão da conta']);
     const reset=findCardByTitle(root,['redefinir instalação']);
-
-    if(install){
-      const heading=install.querySelector('h3');
-      if(heading)heading.textContent='Definir Instalação';
-    }
-
-    [version,install,account].filter(Boolean).forEach(card=>{
-      if(card.parentElement!==finalGrid)finalGrid.appendChild(card);
-    });
-
+    if(install){ const heading=install.querySelector('h3'); if(heading)heading.textContent='Definir Instalação'; }
+    [version,install,account].filter(Boolean).forEach(card=>{ if(card.parentElement!==finalGrid)finalGrid.appendChild(card); });
     if(reset){
       let resetGrid=root.querySelector('.v122-reset-grid');
-      if(!resetGrid){
-        resetGrid=document.createElement('div');
-        resetGrid.className='v122-reset-grid';
-        stack.appendChild(resetGrid);
-      }
+      if(!resetGrid){ resetGrid=document.createElement('div'); resetGrid.className='v122-reset-grid'; stack.appendChild(resetGrid); }
       if(reset.parentElement!==resetGrid)resetGrid.appendChild(reset);
     }
-
     if(finalGrid.parentElement!==stack)stack.appendChild(finalGrid);
   }
 
-  function versionCard(){
-    return document.querySelector('.v121-version-card');
-  }
+  function versionCard(){ return document.querySelector('.v121-version-card'); }
 
   function ensureVersionCard(){
     if(typeof state==='undefined'||state.view!=='settings')return;
-    const card=versionCard();
-    if(!card)return;
-
-    card.classList.add('v121-version-card');
-    card.id='v122-system-version';
-
+    const card=versionCard(); if(!card)return;
+    card.classList.add('v121-version-card'); card.id='v122-system-version';
     if(card.dataset.updateUiReady!=='1'){
       card.innerHTML=`
         <div class="settings-card-head">
@@ -175,53 +123,26 @@
     bindUpdateButton();
   }
 
-  /* ---------- ATUALIZAÇÃO: somente se existir versão superior ---------- */
-  async function refreshServiceWorker(){
-    if(!('serviceWorker' in navigator))return;
-    try{
-      const registration=await navigator.serviceWorker.getRegistration();
-      if(registration)await registration.update();
-    }catch(error){
-      console.warn('Ticket. service worker update:',error);
-    }
-  }
-
   async function fetchPublishedVersion(){
     let lastError=null;
-
     for(const source of VERSION_SOURCES){
       try{
-        const url=source.makeUrl();
-        const response=await fetch(url,{
-          method:'GET',
-          cache:'no-store',
-          credentials:'omit',
+        const response=await fetch(source.makeUrl(),{
+          method:'GET',cache:'no-store',credentials:'omit',
           headers:{'Accept':'application/json','Cache-Control':'no-cache','Pragma':'no-cache'}
         });
         if(!response.ok)throw new Error(`HTTP ${response.status}`);
-        const contentType=(response.headers.get('content-type')||'').toLowerCase();
         const text=await response.text();
-        if(contentType.includes('text/html')||/^\s*<!doctype html/i.test(text))throw new Error('A fonte devolveu HTML em vez do arquivo de versão.');
-
-        let data;
-        if(source.kind==='github-api'){
-          const api=JSON.parse(text);
-          if(!api?.content)throw new Error('Conteúdo da versão não encontrado na API do GitHub.');
-          const decoded=atob(String(api.content).replace(/\s/g,''));
-          data=JSON.parse(decoded);
-        }else{
-          data=JSON.parse(text);
-        }
-
+        if(/^\s*<!doctype html/i.test(text)||/^\s*<html/i.test(text))throw new Error('O servidor devolveu HTML em vez do arquivo de versão.');
+        const data=JSON.parse(text);
         const version=String(data?.version||'').trim();
         if(!normalizeVersion(version))throw new Error('Versão publicada inválida.');
-        return {version,source:source.label,remote:true};
+        return {version,source:source.label};
       }catch(error){
         lastError=error;
         console.warn('Ticket. versão: fonte indisponível',source.label,error);
       }
     }
-
     throw lastError||new Error('Nenhuma fonte de versão disponível.');
   }
 
@@ -230,42 +151,35 @@
       statusEl.className='v121-update-status checking';
       statusEl.textContent=`Nova versão ${escVersion(latest)} encontrada. Instalando a atualização…`;
     }
-
-    if(!('serviceWorker' in navigator)){
-      throw new Error('Este navegador não oferece suporte à atualização automática do Ticket.');
-    }
-
+    if(!('serviceWorker' in navigator))throw new Error('Este navegador não oferece suporte à atualização automática do Ticket.');
     const registration=await navigator.serviceWorker.getRegistration();
     if(!registration)throw new Error('O serviço de atualização do Ticket não está disponível.');
 
     await registration.update();
 
-    const installing=registration.installing;
-    if(installing){
+    let worker=registration.installing||registration.waiting;
+    if(worker){
       await new Promise((resolve,reject)=>{
-        const timeout=setTimeout(()=>resolve(),10000);
+        const timeout=setTimeout(()=>reject(new Error('A atualização não foi instalada dentro do tempo esperado.')),20000);
         const done=()=>{
-          if(['installed','activated','redundant'].includes(installing.state)){
-            clearTimeout(timeout);
-            installing.removeEventListener('statechange',done);
-            if(installing.state==='redundant')reject(new Error('A instalação da atualização foi interrompida.'));
-            else resolve();
+          if(worker.state==='installed'||worker.state==='activated'){
+            clearTimeout(timeout); worker.removeEventListener('statechange',done); resolve();
+          }else if(worker.state==='redundant'){
+            clearTimeout(timeout); worker.removeEventListener('statechange',done); reject(new Error('A instalação da atualização foi interrompida.'));
           }
         };
-        installing.addEventListener('statechange',done);
-        done();
+        worker.addEventListener('statechange',done); done();
       });
     }else{
-      await new Promise(resolve=>setTimeout(resolve,900));
+      throw new Error('Nenhum Service Worker novo foi encontrado para instalar a atualização.');
     }
 
     if(statusEl){
       statusEl.className='v121-update-status success';
       statusEl.innerHTML=`<strong>Atualização ${escVersion(latest)} instalada.</strong><br><span>Reinicie o Ticket. para aplicar a nova versão.</span><div class="v121-update-restart-wrap"><button id="ticketRestartNow" type="button" class="v121-restart-button">Reiniciar Ticket.</button></div>`;
-      const restart=document.querySelector('#ticketRestartNow');
-      restart?.addEventListener('click',()=>{
-        restart.disabled=true;
-        restart.textContent='Reiniciando…';
+      document.querySelector('#ticketRestartNow')?.addEventListener('click',()=>{
+        const restart=document.querySelector('#ticketRestartNow');
+        if(restart){restart.disabled=true;restart.textContent='Reiniciando…';}
         const url=new URL(window.location.href);
         url.searchParams.set('ticketRestart',Date.now().toString());
         window.location.replace(url.toString());
@@ -274,138 +188,89 @@
   }
 
   function resetUpdateButton(){
-    const button=document.querySelector('#ticketCheckUpdates');
-    if(!button)return;
-    button.disabled=false;
-    button.classList.remove('is-checking');
-    const label=button.querySelector('span');
-    if(label)label.textContent='Procurar atualizações';
+    const button=document.querySelector('#ticketCheckUpdates'); if(!button)return;
+    button.disabled=false; button.classList.remove('is-checking');
+    const label=button.querySelector('span'); if(label)label.textContent='Procurar atualizações';
   }
 
-  function updateCheckTime(){
-    return new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  }
+  function updateCheckTime(){ return new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
 
   async function checkForUpdates(){
     if(checking)return;
     checking=true;
-
     const button=document.querySelector('#ticketCheckUpdates');
     const status=document.querySelector('#ticketUpdateStatus');
-
     if(button){
-      button.disabled=true;
-      button.classList.add('is-checking');
-      const label=button.querySelector('span');
-      if(label)label.textContent='Procurando…';
+      button.disabled=true; button.classList.add('is-checking');
+      const label=button.querySelector('span'); if(label)label.textContent='Procurando…';
     }
-    if(status){
-      status.className='v121-update-status checking';
-      status.textContent='Procurando atualizações disponíveis…';
-    }
-
+    if(status){ status.className='v121-update-status checking'; status.textContent='Procurando atualizações disponíveis…'; }
     try{
       const published=await fetchPublishedVersion();
       const latest=published.version;
       const comparison=compareVersions(latest,APP_VERSION);
-
       if(comparison===null)throw new Error('Não foi possível comparar as versões.');
 
       if(comparison>0){
         await installUpdateAndPromptRestart(status,latest);
+        checking=false;
         return;
       }
 
       if(status){
         status.className='v121-update-status success';
         status.textContent=`Sistema atualizado. Você já está na versão mais recente: Ticket. ${escVersion(APP_VERSION)} · verificado às ${updateCheckTime()}.`;
-        if(!published.remote)status.className='v121-update-status success';
       }
-      resetUpdateButton();
-      checking=false;
+      resetUpdateButton(); checking=false;
     }catch(error){
       console.error('Ticket. atualização:',error);
       if(status){
         status.className='v121-update-status error';
         status.textContent=`Não foi possível procurar atualizações agora. Verifique sua conexão e tente novamente · ${updateCheckTime()}.`;
       }
-      resetUpdateButton();
-      checking=false;
+      resetUpdateButton(); checking=false;
     }
   }
 
   function bindUpdateButton(){
     const button=document.querySelector('#ticketCheckUpdates');
     if(!button||button.dataset.bound==='1')return;
-    button.dataset.bound='1';
-    button.addEventListener('click',checkForUpdates);
+    button.dataset.bound='1'; button.addEventListener('click',checkForUpdates);
   }
 
-  /* ---------- RENDER / OBSERVAÇÃO ---------- */
   const previousRender=typeof renderView==='function'?renderView:null;
   if(previousRender){
     renderView=function(...args){
       const result=previousRender.apply(this,args);
       requestAnimationFrame(()=>{
         if(typeof state!=='undefined'&&state.view==='capture')bindCamera();
-        if(typeof state!=='undefined'&&state.view==='settings'){
-          ensureFinalSettingsOrder();
-          ensureVersionCard();
-        }
+        if(typeof state!=='undefined'&&state.view==='settings'){ensureFinalSettingsOrder();ensureVersionCard();}
       });
       setTimeout(()=>{
         if(typeof state!=='undefined'&&state.view==='capture')bindCamera();
-        if(typeof state!=='undefined'&&state.view==='settings'){
-          ensureFinalSettingsOrder();
-          ensureVersionCard();
-        }
+        if(typeof state!=='undefined'&&state.view==='settings'){ensureFinalSettingsOrder();ensureVersionCard();}
       },180);
       return result;
     };
   }
 
   const previousStart=typeof startCamera==='function'?startCamera:null;
-  if(previousStart){
-    startCamera=async function(...args){
-      const result=await previousStart.apply(this,args);
-      bindCamera();
-      return result;
-    };
-  }
+  if(previousStart){ startCamera=async function(...args){const result=await previousStart.apply(this,args);bindCamera();return result;}; }
 
   let queued=false;
   const observer=new MutationObserver(()=>{
-    if(queued)return;
-    if(typeof state==='undefined')return;
+    if(queued||typeof state==='undefined')return;
     if(state.view!=='capture'&&state.view!=='settings')return;
     queued=true;
-    setTimeout(()=>{
-      queued=false;
-      if(state.view==='capture')bindCamera();
-      if(state.view==='settings'){
-        ensureFinalSettingsOrder();
-        ensureVersionCard();
-      }
-    },80);
+    setTimeout(()=>{queued=false;if(state.view==='capture')bindCamera();if(state.view==='settings'){ensureFinalSettingsOrder();ensureVersionCard();}},80);
   });
   observer.observe(document.documentElement,{childList:true,subtree:true});
 
   document.addEventListener('DOMContentLoaded',()=>{
-    setTimeout(()=>{
+    [250,700].forEach(ms=>setTimeout(()=>{
       if(typeof state==='undefined')return;
       if(state.view==='capture')bindCamera();
-      if(state.view==='settings'){
-        ensureFinalSettingsOrder();
-        ensureVersionCard();
-      }
-    },250);
-    setTimeout(()=>{
-      if(typeof state==='undefined')return;
-      if(state.view==='capture')bindCamera();
-      if(state.view==='settings'){
-        ensureFinalSettingsOrder();
-        ensureVersionCard();
-      }
-    },700);
+      if(state.view==='settings'){ensureFinalSettingsOrder();ensureVersionCard();}
+    },ms));
   });
 })();
