@@ -1,0 +1,5 @@
+Ticket. v1.0.29
+
+1. Registrar Ambiente: Registrar e Cancelar agora têm exatamente o mesmo tamanho, com pequeno espaçamento. Cancelar usa Glassmorphism transparente com leve tonalidade avermelhada.
+2. Procurar atualizações: quando encontra versão superior, instala a atualização pelo Service Worker e solicita reinício manual para aplicar. Quando não há versão superior, apenas informa que o sistema já está atualizado e não recarrega.
+3. Versão/cache: v1.0.29 / Service Worker v127.

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Ticket.">
+  <defs>
+    <linearGradient id="ticketIconGradient" x1="104" y1="104" x2="408" y2="408" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#835fff"/>
+      <stop offset="1" stop-color="#4c24a8"/>
+    </linearGradient>
+    <filter id="ticketIconShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#5d459f" flood-opacity=".13"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" fill="#eef1f7"/>
+  <rect x="96" y="96" width="320" height="320" rx="92" fill="#f9faff" stroke="#ffffff" stroke-width="4" filter="url(#ticketIconShadow)"/>
+  <g fill="none" stroke="url(#ticketIconGradient)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M179 183a122 122 0 1 1-25 142"/>
+    <path d="M151 183h92v92"/>
+    <path d="m157 190 80 80"/>
+  </g>
+</svg>

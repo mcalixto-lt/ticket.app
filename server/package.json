@@ -1,0 +1,16 @@
+{
+  "name": "ticket-app-ai",
+  "version": "1.0.11",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node index.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@google/genai": "^2.14.0",
+    "express": "^5.1.0"
+  }
+}

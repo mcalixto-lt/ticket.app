@@ -1,0 +1,12 @@
+Ticket. — Atualização v1.0.27
+
+Alterações desta atualização:
+1. Mantido o quadro da câmera em 636 px de largura por 500 px de altura.
+2. Corrigida a interface de verificação de atualizações.
+3. O resultado da busca agora permanece visível no próprio box da versão.
+4. Corrigido o MutationObserver que reconstruía o card e apagava a mensagem imediatamente após o clique.
+5. Quando não houver atualização, o sistema informa claramente que está atualizado.
+6. Quando houver nova versão, o sistema informa a versão encontrada e somente então inicia a atualização.
+7. Em falha de conexão, o sistema informa que não conseguiu verificar, sem atualizar ou recarregar.
+8. A verificação usa fontes remotas do GitHub antes de usar a versão local como fallback.
+9. Cache-busting atualizado para v125 e Service Worker para ticket-app-v125.
