@@ -1,4 +1,4 @@
-/* Ticket. 1.0.30 — campos compactos e jornada dentro de Recursos do Ticket. */
+/* Ticket. 1.0.35 — configurações compactas e Jornada Semanal expansível */
 #balanceForm > .two-col,
 #closingForm > .two-col{
   grid-template-columns:minmax(0,1fr) minmax(0,1fr);
@@ -6,21 +6,44 @@
   align-items:end;
 }
 #balanceForm > .two-col .field,
-#closingForm > .two-col .field{
-  min-width:0;
-}
+#closingForm > .two-col .field{min-width:0;}
 #balanceForm > .two-col input,
-#closingForm > .two-col select{
-  width:100%;
-  min-width:0;
+#closingForm > .two-col select{width:100%;min-width:0;}
+
+.v130-resources-card .v105-resource-grid{gap:10px;}
+.v130-resources-card .v105-resource-grid > button,
+.v130-weekly-details{min-width:0;width:100%;}
+.v130-weekly-details{
+  border:1px solid rgba(100,109,132,.12);
+  border-radius:16px;
+  background:rgba(255,255,255,.32);
+  overflow:hidden;
 }
-.v130-resources-card .v130-schedule-inside{
-  margin-top:16px;
-  padding-top:16px;
-  border-top:1px solid rgba(100,109,132,.12);
+.v130-weekly-details summary{
+  list-style:none;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+  min-height:72px;
+  padding:12px 14px;
+  cursor:pointer;
+  user-select:none;
 }
-.v130-resources-card .v130-schedule-inside > .schedule-rich-card{
-  margin:0;
+.v130-weekly-details summary::-webkit-details-marker{display:none;}
+.v130-weekly-details summary:hover{background:rgba(255,255,255,.38);}
+.v130-weekly-summary-copy{display:flex;flex-direction:column;min-width:0;gap:3px;}
+.v130-weekly-summary-copy strong{font-size:.86rem;font-weight:850;color:var(--text,#1c2333);}
+.v130-weekly-summary-copy small{font-size:.68rem;line-height:1.35;color:var(--muted,#687184);}
+.v130-weekly-chevron{
+  width:28px;height:28px;display:grid;place-items:center;border-radius:9px;
+  color:var(--muted,#687184);font-size:1.35rem;line-height:1;
+  transition:transform .18s ease,background .18s ease;
+}
+.v130-weekly-details[open] .v130-weekly-chevron{transform:rotate(90deg);background:rgba(106,67,190,.08);color:#6f46c4;}
+.v130-weekly-details-body{padding:0 14px 14px;border-top:1px solid rgba(100,109,132,.10);}
+.v130-weekly-details-body > .schedule-rich-card{
+  margin:14px 0 0;
   padding:0;
   background:transparent;
   border:0;
@@ -28,17 +51,11 @@
   -webkit-backdrop-filter:none;
   backdrop-filter:none;
 }
-.v130-resources-card .v130-schedule-inside .settings-card-head{
-  margin-bottom:14px;
-}
+.v130-weekly-details-body .settings-card-head{margin-bottom:14px;}
+
 @media(max-width:760px){
   #balanceForm > .two-col,
-  #closingForm > .two-col{
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-    gap:9px;
-  }
-  .v130-resources-card .v130-schedule-inside{
-    margin-top:14px;
-    padding-top:14px;
-  }
+  #closingForm > .two-col{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px;}
+  .v130-weekly-details summary{min-height:68px;padding:11px 12px;}
+  .v130-weekly-details-body{padding:0 10px 10px;}
 }
