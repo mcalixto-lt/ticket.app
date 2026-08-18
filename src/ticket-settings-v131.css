@@ -1,0 +1,22 @@
+/* Ticket. 1.0.35 — Jornada Semanal em página própria */
+.v131-resource-button{cursor:pointer;}
+.v131-weekly-page{animation:v131PageIn .18s ease both;}
+.v131-weekly-page-intro{position:relative;}
+.v131-back-button{
+  display:inline-flex;align-items:center;gap:7px;margin:0 0 16px;padding:8px 12px;
+  border:1px solid rgba(100,109,132,.14);border-radius:11px;background:rgba(255,255,255,.55);
+  color:var(--text,#1c2333);font:inherit;font-size:.74rem;font-weight:800;cursor:pointer;
+}
+.v131-back-button:hover{background:rgba(255,255,255,.8);}
+.v131-weekly-stack{max-width:980px;}
+.v131-weekly-card{overflow:hidden;}
+.v131-weekly-card > .schedule-rich-card{margin:0;border:0;box-shadow:none;background:transparent;}
+.v131-weekly-card .settings-card-head{padding-bottom:16px;}
+.v131-weekly-card .schedule-grid{margin-top:8px;}
+body.v131-page-open{overflow-x:hidden;}
+@keyframes v131PageIn{from{opacity:.55;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media(max-width:760px){
+  .v131-weekly-page-intro{padding-top:2px;}
+  .v131-back-button{margin-bottom:12px;}
+  .v131-weekly-card{border-radius:20px;}
+}
