@@ -3,7 +3,7 @@
   "name": "Ticket.",
   "short_name": "Ticket.",
   "description": "Controle pessoal de jornada, registros e banco de horas.",
-  "start_url": "/?v=127",
+  "start_url": "/?v=128",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",

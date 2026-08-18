@@ -1,0 +1,7 @@
+Ticket. v1.0.30
+
+1. Configurações — Horas e Minutos agora ficam lado a lado, com espaçamento compacto e responsivo.
+2. Configurações — Dia inicial do ciclo e Dia final do ciclo agora ficam lado a lado, na mesma linha.
+3. Configurações — Jornada semanal foi movida para dentro do box Recursos do Ticket.
+4. Mantido o restante do layout e funcionalidades existentes.
+5. Versão/cache: v1.0.30 / Service Worker v128.
