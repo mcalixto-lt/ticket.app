@@ -1,5 +1,12 @@
 {
-  "version": "1.0.31",
+  "version": "1.0.33",
   "name": "Ticket.",
-  "releasedAt": "2026-08-18"
+  "releasedAt": "2026-08-18",
+  "changelog": [
+    "Correção crítica: Service Worker estava servindo versão 1.0.32 em cache no celular",
+    "Atualização do cache do Service Worker para v132 (antes estava travado em v129)",
+    "Todos os arquivos CSS/JS agora usam v=132 para forçar recarregamento no mobile",
+    "version.json atualizado para 1.0.33 para garantir detecção de atualização",
+    "Garantia que celular mostrará 1.0.33 após reinstalar o app"
+  ]
 }

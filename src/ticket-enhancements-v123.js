@@ -1,12 +1,12 @@
-/* Ticket. 1.0.31 — verificação de atualizações corrigida */
+/* Ticket. 1.0.33 — correção de cache mobile */
 'use strict';
 
 (function(){
-  const APP_VERSION='1.0.31';
+  const APP_VERSION='1.0.32';
   const VERSION_SOURCES=[
-    {label:'jsDelivr',makeUrl:()=>`https://cdn.jsdelivr.net/gh/mcalixto-lt/ticket.app@main/public/version.json?check=${Date.now()}`,remote:true,kind:'json'},
-    {label:'GitHub Raw',makeUrl:()=>`https://raw.githubusercontent.com/mcalixto-lt/ticket.app/main/public/version.json?check=${Date.now()}`,remote:true,kind:'json'},
-    {label:'GitHub API',makeUrl:()=>`https://api.github.com/repos/mcalixto-lt/ticket.app/contents/public/version.json?ref=main&check=${Date.now()}`,remote:true,kind:'github-api'}
+    {label:'jsDelivr',makeUrl:()=>`https://cdn.jsdelivr.net/gh/mcalixto-lt/ticket.app@main/version.json?check=${Date.now()}`,remote:true,kind:'json'},
+    {label:'GitHub Raw',makeUrl:()=>`https://raw.githubusercontent.com/mcalixto-lt/ticket.app/main/version.json?check=${Date.now()}`,remote:true,kind:'json'},
+    {label:'GitHub API',makeUrl:()=>`https://api.github.com/repos/mcalixto-lt/ticket.app/contents/version.json?ref=main&check=${Date.now()}`,remote:true,kind:'github-api'}
   ];
 
   const CAMERA_WIDTH=636;
@@ -41,12 +41,6 @@
   function applyCameraDimensions(){
     const stage=cameraStage();
     if(!stage)return;
-
-    /*
-      Não usamos a proporção da câmera para dimensionar o container.
-      O container agora tem exatamente 636 x 500 px e fica centralizado.
-      Isso evita que scripts anteriores alterem a posição ou a altura.
-    */
     stage.style.width=`min(${CAMERA_WIDTH}px, 100%)`;
     stage.style.maxWidth=`${CAMERA_WIDTH}px`;
     stage.style.height=`${CAMERA_HEIGHT}px`;
@@ -58,7 +52,6 @@
     stage.style.marginInline='auto';
     stage.style.position='relative';
     stage.style.overflow='hidden';
-
     const sources=stage.querySelectorAll('video,img');
     sources.forEach(source=>{
       source.style.width='100%';
@@ -77,12 +70,10 @@
     applyCameraDimensions();
     const video=document.querySelector('#cameraVideo');
     const image=document.querySelector('#cameraStage img');
-
     video?.addEventListener('loadedmetadata',applyCameraDimensions);
     video?.addEventListener('canplay',applyCameraDimensions);
     video?.addEventListener('resize',applyCameraDimensions);
     image?.addEventListener('load',applyCameraDimensions);
-
     [0,50,150,350,700,1200].forEach(ms=>setTimeout(applyCameraDimensions,ms));
   }
 
@@ -132,10 +123,6 @@
       if(heading)heading.textContent='Definir Instalação';
     }
 
-    /*
-      O grupo é reconstruído sempre na mesma ordem.
-      Os cards originais são movidos, não clonados, preservando seus eventos.
-    */
     [version,install,account].filter(Boolean).forEach(card=>{
       if(card.parentElement!==finalGrid)finalGrid.appendChild(card);
     });
@@ -150,10 +137,6 @@
       if(reset.parentElement!==resetGrid)resetGrid.appendChild(reset);
     }
 
-    /*
-      Tudo que já foi colocado no grupo final deixa de permanecer no stack
-      original, evitando uma segunda camada visual.
-    */
     if(finalGrid.parentElement!==stack)stack.appendChild(finalGrid);
   }
 
@@ -169,12 +152,6 @@
     card.classList.add('v121-version-card');
     card.id='v122-system-version';
 
-    /*
-      IMPORTANTE: esta função é chamada pelo MutationObserver.
-      Não podemos reconstruir innerHTML a cada mutação, porque o clique em
-      "Procurar atualizações" altera o próprio texto/status do card e isso
-      faria o observer apagar imediatamente o resultado da verificação.
-    */
     if(card.dataset.updateUiReady!=='1'){
       card.innerHTML=`
         <div class="settings-card-head">
@@ -261,12 +238,8 @@
     const registration=await navigator.serviceWorker.getRegistration();
     if(!registration)throw new Error('O serviço de atualização do Ticket não está disponível.');
 
-    // Solicita a instalação da versão nova sem recarregar a página.
     await registration.update();
 
-    // Aguarda a instalação/ativação do novo Service Worker. O SW do Ticket
-    // usa skipWaiting()/clients.claim(), portanto a nova versão assume o
-    // controle sem reiniciar automaticamente o navegador.
     const installing=registration.installing;
     if(installing){
       await new Promise((resolve,reject)=>{
