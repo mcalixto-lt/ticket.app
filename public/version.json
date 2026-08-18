@@ -1,5 +1,11 @@
 {
-  "version": "1.0.31",
+  "version": "1.0.32",
   "name": "Ticket.",
-  "releasedAt": "2026-08-18"
+  "releasedAt": "2026-08-18",
+  "changelog": [
+    "Correção do sistema de verificação de atualizações",
+    "Melhor tratamento de erros com mensagens detalhadas",
+    "Timestamp dinâmico em todas as mensagens",
+    "Fallback automático entre múltiplas fontes"
+  ]
 }
