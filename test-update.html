@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste de Atualização - Ticket.</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 { color: #333; }
+    h2 { color: #555; margin-top: 0; }
+    button {
+      background: #6f46c4;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px;
+    }
+    button:hover { background: #5a36a8; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    .status {
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-weight: bold;
+    }
+    .status.checking { background: #e8f5e9; color: #2e7d32; }
+    .status.success { background: #e8f5e9; color: #2e7d32; }
+    .status.error { background: #ffebee; color: #c62828; }
+    .status.info { background: #e3f2fd; color: #1565c0; }
+    pre {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Teste de Sistema de Atualização - Ticket.</h1>
+  
+  <div class="card">
+    <h2>Configuração de Teste</h2>
+    <p>Versão instalada (simulada): <strong>1.0.30</strong></p>
+    <p>Versão no repositório: <strong>1.0.31</strong></p>
+    <p>Fonte: <strong>jsDelivr (mais rápida)</strong></p>
+    <button id="testBtn" onclick="runTest()">Executar Teste</button>
+    <button id="resetBtn" onclick="resetTest()">Resetar</button>
+  </div>
+  
+  <div class="card">
+    <h2>Status</h2>
+    <div id="status" class="status info">Aguardando teste...</div>
+  </div>
+  
+  <div class="card">
+    <h2>Log de Execução</h2>
+    <pre id="log"></pre>
+  </div>
+  
+  <div class="card">
+    <h2>Resultado da Comparação</h2>
+    <pre id="result"></pre>
+  </div>
+
+  <script>
+    const APP_VERSION = '1.0.30'; // Versão mais antiga para testar
+    
+    const VERSION_SOURCES = [
+      { label: 'jsDelivr', makeUrl: () => `https://cdn.jsdelivr.net/gh/mcalixto-lt/ticket.app@main/public/version.json?t=${Date.now()}`, remote: true, kind: 'json' },
+      { label: 'GitHub Raw', makeUrl: () => `https://raw.githubusercontent.com/mcalixto-lt/ticket.app/main/public/version.json?t=${Date.now()}`, remote: true, kind: 'json' },
+      { label: 'GitHub API', makeUrl: () => `https://api.github.com/repos/mcalixto-lt/ticket.app/contents/public/version.json?ref=main&t=${Date.now()}`, remote: true, kind: 'github-api' }
+    ];
+
+    function log(message) {
+      const logEl = document.getElementById('log');
+      const timestamp = new Date().toLocaleTimeString('pt-BR');
+      logEl.textContent += `[${timestamp}] ${message}\n`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function setStatus(message, type) {
+      const statusEl = document.getElementById('status');
+      statusEl.textContent = message;
+      statusEl.className = `status ${type}`;
+    }
+
+    function setResult(message) {
+      document.getElementById('result').textContent = message;
+    }
+
+    function normalizeVersion(value) {
+      const match = String(value ?? '').trim().replace(/^v/i, '').match(/^(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:[-+].*)?$/);
+      if (!match) return null;
+      return [Number(match[1] || 0), Number(match[2] || 0), Number(match[3] || 0)];
+    }
+
+    function compareVersions(a, b) {
+      const av = normalizeVersion(a), bv = normalizeVersion(b);
+      if (!av || !bv) return null;
+      for (let i = 0; i < 3; i++) {
+        if (av[i] > bv[i]) return 1;
+        if (av[i] < bv[i]) return -1;
+      }
+      return 0;
+    }
+
+    async function fetchPublishedVersion() {
+      let lastError = null;
+
+      for (const source of VERSION_SOURCES) {
+        log(`Testando fonte: ${source.label}`);
+        log(`URL: ${source.makeUrl()}`);
+        
+        try {
+          const url = source.makeUrl();
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+          
+          const response = await fetch(url, {
+            method: 'GET',
+            cache: 'no-store',
+            credentials: 'omit',
+            headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' },
+            signal: controller.signal
+          });
+          
+          clearTimeout(timeoutId);
+          
+          log(`Status: ${response.status} ${response.statusText}`);
+          log(`Content-Type: ${response.headers.get('content-type')}`);
+          
+          if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
+          
+          const contentType = (response.headers.get('content-type') || '').toLowerCase();
+          const text = await response.text();
+          log(`Texto recebido: ${text}`);
+          
+          if (contentType.includes('text/html') || /^\s*<!doctype html/i.test(text)) {
+            throw new Error('A fonte devolveu HTML em vez do arquivo de versão.');
+          }
+
+          let data;
+          if (source.kind === 'github-api') {
+            const api = JSON.parse(text);
+            if (!api?.content) throw new Error('Conteúdo da versão não encontrado na API do GitHub.');
+            const decoded = atob(String(api.content).replace(/\s/g, ''));
+            data = JSON.parse(decoded);
+            log(`Dados decodificados (GitHub API):`, data);
+          } else {
+            data = JSON.parse(text);
+            log(`Dados parseados (JSON direto):`, data);
+          }
+
+          const version = String(data?.version || '').trim();
+          log(`Versão encontrada: ${version}`);
+          
+          if (!normalizeVersion(version)) throw new Error('Versão publicada inválida.');
+          
+          log(`✓ Versão encontrada via ${source.label}: ${version}`);
+          return { version, source: source.label, remote: true };
+        } catch (error) {
+          log(`✗ ERRO na fonte ${source.label}: ${error.message}`);
+          lastError = error;
+        }
+      }
+
+      throw lastError || new Error('Nenhuma fonte de versão disponível.');
+    }
+
+    async function runTest() {
+      const btn = document.getElementById('testBtn');
+      btn.disabled = true;
+      
+      log('\n=== INICIANDO TESTE DE ATUALIZAÇÃO ===');
+      log(`Versão instalada: ${APP_VERSION}`);
+      
+      try {
+        setStatus('Procurando atualizações...', 'checking');
+        
+        const published = await fetchPublishedVersion();
+        const latest = published.version;
+        
+        log(`\nVersão publicada: ${latest}`);
+        log(`Fonte: ${published.source}`);
+        
+        const comparison = compareVersions(latest, APP_VERSION);
+        log(`Comparação: ${latest} vs ${APP_VERSION} = ${comparison}`);
+        
+        let result = '';
+        if (comparison === null) {
+          throw new Error('Não foi possível comparar as versões.');
+        } else if (comparison > 0) {
+          result = `NOVA VERSÃO DISPONÍVEL!\n\nDe: ${APP_VERSION}\nPara: ${latest}\n\nO sistema deve iniciar a atualização.`;
+          setStatus('✓ NOVA VERSÃO ENCONTRADA!', 'success');
+        } else if (comparison === 0) {
+          result = `MESMA VERSÃO\n\nVocê já está na versão mais recente: ${APP_VERSION}`;
+          setStatus('✓ Sistema atualizado', 'success');
+        } else {
+          result = `VERSÃO MAIS ANTIGA\n\nA versão publicada (${latest}) é mais antiga que a instalada (${APP_VERSION}).`;
+          setStatus('⚠ Versão mais antiga no repositório', 'error');
+        }
+        
+        setResult(result);
+        log('\n=== TESTE CONCLUÍDO ===');
+        
+      } catch (error) {
+        log(`\n✗ ERRO: ${error.message}`);
+        setStatus(`✗ Erro: ${error.message}`, 'error');
+        setResult(`ERRO NA VERIFICAÇÃO\n\n${error.message}`);
+        log('\n=== TESTE CONCLUÍDO COM ERRO ===');
+      }
+      
+      btn.disabled = false;
+    }
+
+    function resetTest() {
+      document.getElementById('log').textContent = '';
+      document.getElementById('result').textContent = '';
+      setStatus('Aguardando teste...', 'info');
+    }
+
+    // Auto-teste ao carregar
+    window.addEventListener('load', () => {
+      log('Teste de atualização carregado.');
+      log('Clique em "Executar Teste" para verificar atualizações.');
+    });
+  </script>
+</body>
+</html>

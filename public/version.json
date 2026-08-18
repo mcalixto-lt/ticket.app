@@ -1,5 +1,13 @@
 {
-  "version": "1.0.31",
+  "version": "1.0.32",
   "name": "Ticket.",
-  "releasedAt": "2026-08-18"
+  "releasedAt": "2026-08-18",
+  "changelog": [
+    "Correção do sistema de verificação de atualizações",
+    "Timeout de 5 segundos para cada fonte de versão",
+    "Teste paralelo de múltiplas fontes (jsDelivr, GitHub Raw, GitHub API)",
+    "Melhor tratamento de erros com mensagens detalhadas",
+    "Feedback visual melhorado com ícones e timestamps dinâmicos",
+    "Funciona offline e online com fallback automático"
+  ]
 }

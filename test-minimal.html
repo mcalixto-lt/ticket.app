@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teste Minimal - Ticket.</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+    .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    button { background: #6f46c4; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+    button:disabled { background: #ccc; }
+    .status { margin-top: 15px; padding: 12px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>🧪 Teste Minimal de Atualização</h2>
+    <p>Versão instalada: <strong>1.0.31</strong></p>
+    <p>Versão no repositório: <strong>1.0.32</strong></p>
+    
+    <button id="ticketCheckUpdates" style="margin-top: 20px;">
+      🔍 Procurar atualizações
+    </button>
+    
+    <div id="ticketUpdateStatus" class="status" style="display: none;"></div>
+  </div>
+
+  <script src="./minimal-fix.js"></script>
+  
+  <div class="card" style="margin-top: 20px;">
+    <h3>📋 Logs do Console</h3>
+    <p>Abra o console do navegador (F12) para ver os logs detalhados.</p>
+    <p>O código está adicionando logs em cada etapa para debug.</p>
+  </div>
+</body>
+</html>

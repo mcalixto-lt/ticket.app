@@ -41,12 +41,6 @@
   function applyCameraDimensions(){
     const stage=cameraStage();
     if(!stage)return;
-
-    /*
-      Não usamos a proporção da câmera para dimensionar o container.
-      O container agora tem exatamente 636 x 500 px e fica centralizado.
-      Isso evita que scripts anteriores alterem a posição ou a altura.
-    */
     stage.style.width=`min(${CAMERA_WIDTH}px, 100%)`;
     stage.style.maxWidth=`${CAMERA_WIDTH}px`;
     stage.style.height=`${CAMERA_HEIGHT}px`;
@@ -132,10 +126,6 @@
       if(heading)heading.textContent='Definir Instalação';
     }
 
-    /*
-      O grupo é reconstruído sempre na mesma ordem.
-      Os cards originais são movidos, não clonados, preservando seus eventos.
-    */
     [version,install,account].filter(Boolean).forEach(card=>{
       if(card.parentElement!==finalGrid)finalGrid.appendChild(card);
     });
@@ -150,10 +140,6 @@
       if(reset.parentElement!==resetGrid)resetGrid.appendChild(reset);
     }
 
-    /*
-      Tudo que já foi colocado no grupo final deixa de permanecer no stack
-      original, evitando uma segunda camada visual.
-    */
     if(finalGrid.parentElement!==stack)stack.appendChild(finalGrid);
   }
 
@@ -169,12 +155,6 @@
     card.classList.add('v121-version-card');
     card.id='v122-system-version';
 
-    /*
-      IMPORTANTE: esta função é chamada pelo MutationObserver.
-      Não podemos reconstruir innerHTML a cada mutação, porque o clique em
-      "Procurar atualizações" altera o próprio texto/status do card e isso
-      faria o observer apagar imediatamente o resultado da verificação.
-    */
     if(card.dataset.updateUiReady!=='1'){
       card.innerHTML=`
         <div class="settings-card-head">
@@ -213,23 +193,18 @@
       const fetchPromise = (async () => {
         try {
           const url = source.makeUrl();
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), timeout);
-          
           const response = await fetch(url, {
             method: 'GET',
             cache: 'no-store',
             credentials: 'omit',
-            headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' },
-            signal: controller.signal
+            headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
           });
-          
-          clearTimeout(timeoutId);
-          
+
           if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
-          
+
           const contentType = (response.headers.get('content-type') || '').toLowerCase();
           const text = await response.text();
+
           if (contentType.includes('text/html') || /^\s*<!doctype html/i.test(text)) {
             throw new Error('A fonte devolveu HTML em vez do arquivo de versão.');
           }
@@ -286,9 +261,7 @@
     // Solicita a instalação da versão nova sem recarregar a página.
     await registration.update();
 
-    // Aguarda a instalação/ativação do novo Service Worker. O SW do Ticket
-    // usa skipWaiting()/clients.claim(), portanto a nova versão assume o
-    // controle sem reiniciar automaticamente o navegador.
+    // Aguarda a instalação/ativação do novo Service Worker.
     const installing=registration.installing;
     if(installing){
       await new Promise((resolve,reject)=>{

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagnóstico de Atualização - Ticket.</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 16px;
+      font-size: 1.3rem;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 8px;
+    }
+    .status-box {
+      padding: 16px;
+      border-radius: 12px;
+      margin: 12px 0;
+      font-weight: 500;
+    }
+    .status-box.success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
+    .status-box.error { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
+    .status-box.warning { background: #fff3cd; color: #856404; border-left: 4px solid #ffc107; }
+    .status-box.info { background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8; }
+    .status-box.checking { background: #e2e3e5; color: #383d41; border-left: 4px solid #6c757d; animation: pulse 1.5s infinite; }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      margin: 8px 5px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    pre {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.6;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .metric {
+      display: inline-block;
+      background: #f0f0f0;
+      padding: 8px 16px;
+      border-radius: 8px;
+      margin: 4px;
+      font-family: monospace;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .metric-card {
+      background: #f8f9fa;
+      padding: 16px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .metric-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+    .metric-label {
+      color: #666;
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Diagnóstico de Atualização - Ticket.</h1>
+    
+    <div class="card">
+      <h2>📊 Informações do Sistema</h2>
+      <div class="grid">
+        <div class="metric-card">
+          <div class="metric-value" id="appVersion">-</div>
+          <div class="metric-label">Versão Instalada</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="publishedVersion">-</div>
+          <div class="metric-label">Versão Publicadas</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="swStatus">-</div>
+          <div class="metric-label">Service Worker</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="cacheStatus">-</div>
+          <div class="metric-label">Cache Status</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>🧪 Testar Verificação de Atualizações</h2>
+      <p style="margin-bottom: 16px; color: #666;">Clique no botão abaixo para testar o sistema de verificação de atualizações com logging detalhado.</p>
+      <button id="testBtn" onclick="runDiagnostic()">Executar Diagnóstico Completo</button>
+      <button id="resetBtn" onclick="resetDiagnostic()">Resetar</button>
+    </div>
+    
+    <div class="card">
+      <h2>📋 Status da Verificação</h2>
+      <div id="statusBox" class="status-box info">Aguardando teste...</div>
+    </div>
+    
+    <div class="card">
+      <h2>📝 Log Detalhado</h2>
+      <pre id="log"></pre>
+    </div>
+    
+    <div class="card">
+      <h2>🔍 Análise de Problemas</h2>
+      <div id="analysis"></div>
+    </div>
+  </div>
+
+  <script>
+    // Captura a versão do app
+    const APP_VERSION = typeof APP_VERSION !== 'undefined' ? APP_VERSION : '1.0.32';
+    
+    let diagnosticLog = [];
+    
+    function log(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString('pt-BR');
+      const entry = `[${timestamp}] [${type.toUpperCase()}] ${message}`;
+      diagnosticLog.push(entry);
+      console.log(entry);
+      
+      const logEl = document.getElementById('log');
+      logEl.textContent = diagnosticLog.join('\n');
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+    
+    function setStatus(message, type = 'info') {
+      const statusEl = document.getElementById('statusBox');
+      statusEl.textContent = message;
+      statusEl.className = `status-box ${type}`;
+    }
+    
+    function setMetric(id, value) {
+      document.getElementById(id).textContent = value;
+    }
+    
+    async function runDiagnostic() {
+      const btn = document.getElementById('testBtn');
+      btn.disabled = true;
+      
+      diagnosticLog = [];
+      log('=== INICIANDO DIAGNÓSTICO COMPLETO ===', 'system');
+      
+      try {
+        // 1. Verificar versão do app
+        log(`Versão do app (JS): ${APP_VERSION}`);
+        setMetric('appVersion', APP_VERSION);
+        
+        // 2. Verificar Service Worker
+        if ('serviceWorker' in navigator) {
+          const registration = await navigator.serviceWorker.getRegistration();
+          if (registration) {
+            log(`Service Worker registrado: ${registration.scope}`);
+            log(`Estado: ${registration.installing ? 'Instalando' : registration.waiting ? 'Aguardando' : 'Ativo'}`);
+            setMetric('swStatus', '✅ Sim');
+          } else {
+            log('⚠️ Service Worker não registrado!', 'warning');
+            setMetric('swStatus', '❌ Não');
+          }
+        } else {
+          log('❌ Service Worker não suportado pelo navegador', 'error');
+          setMetric('swStatus', '❌ Não suportado');
+        }
+        
+        // 3. Verificar cache
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          log(`Caches encontrados: ${keys.length} (${keys.join(', ')})`);
+          setMetric('cacheStatus', `${keys.length}`);
+        } else {
+          log('⚠️ API de Cache não disponível', 'warning');
+          setMetric('cacheStatus', 'N/A');
+        }
+        
+        // 4. Testar fontes de versão
+        log('\n=== TESTANDO FONTES DE VERSÃO ===');
+        
+        const VERSION_SOURCES = [
+          { label: 'jsDelivr', url: `https://cdn.jsdelivr.net/gh/mcalixto-lt/ticket.app@main/public/version.json?t=${Date.now()}` },
+          { label: 'GitHub Raw', url: `https://raw.githubusercontent.com/mcalixto-lt/ticket.app/main/public/version.json?t=${Date.now()}` },
+          { label: 'GitHub API', url: `https://api.github.com/repos/mcalixto-lt/ticket.app/contents/public/version.json?ref=main&t=${Date.now()}` }
+        ];
+        
+        const results = [];
+        
+        for (const source of VERSION_SOURCES) {
+          log(`\nTestando: ${source.label}`);
+          log(`URL: ${source.url}`);
+          
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            
+            const response = await fetch(source.url, {
+              method: 'GET',
+              cache: 'no-store',
+              credentials: 'omit',
+              headers: { 'Accept': 'application/json' },
+              signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            log(`Status: ${response.status} ${response.statusText}`);
+            log(`Content-Type: ${response.headers.get('content-type')}`);
+            
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const text = await response.text();
+            log(`Resposta: ${text.substring(0, 200)}...`);
+            
+            if (text.includes('<!doctype') || text.includes('<html')) {
+              throw new Error('Resposta é HTML, não JSON');
+            }
+            
+            let data;
+            if (source.label === 'GitHub API') {
+              const api = JSON.parse(text);
+              if (!api?.content) throw new Error('Sem conteúdo na API');
+              const decoded = atob(api.content.replace(/\s/g, ''));
+              data = JSON.parse(decoded);
+            } else {
+              data = JSON.parse(text);
+            }
+            
+            log(`✓ Sucesso! Versão: ${data.version}`);
+            results.push({ source: source.label, version: data.version, success: true });
+            
+          } catch (error) {
+            log(`✗ Erro: ${error.message}`, 'error');
+            results.push({ source: source.label, version: null, error: error.message, success: false });
+          }
+        }
+        
+        // 5. Analisar resultados
+        log('\n=== RESULTADOS ===');
+        const successResults = results.filter(r => r.success);
+        
+        if (successResults.length === 0) {
+          log('❌ NENHUMA FONTE FUNCIONOU!', 'error');
+          setStatus('❌ Todas as fontes falharam. Verifique sua conexão.', 'error');
+          setAnalysis(results);
+        } else {
+          const latestVersion = successResults[0].version;
+          log(`✓ Versão encontrada: ${latestVersion} (via ${successResults[0].source})`);
+          setMetric('publishedVersion', latestVersion);
+          
+          // Comparar versões
+          const comparison = compareVersions(latestVersion, APP_VERSION);
+          log(`Comparação: ${latestVersion} vs ${APP_VERSION} = ${comparison > 0 ? 'NOVA' : comparison === 0 ? 'IGUAL' : 'ANTIGA'}`);
+          
+          if (comparison > 0) {
+            setStatus(`✅ NOVA VERSÃO DISPONÍVEL!\nDe ${APP_VERSION} para ${latestVersion}`, 'success');
+          } else if (comparison === 0) {
+            setStatus(`✓ Sistema atualizado!\nVocê está na versão mais recente: ${APP_VERSION}`, 'success');
+          } else {
+            setStatus(`⚠️ Versão mais antiga no repositório\nPublicado: ${latestVersion}, Instalado: ${APP_VERSION}`, 'warning');
+          }
+          
+          setAnalysis(results, comparison);
+        }
+        
+        log('\n=== DIAGNÓSTICO CONCLUÍDO ===', 'system');
+        
+      } catch (error) {
+        log(`Erro crítico no diagnóstico: ${error.message}`, 'error');
+        setStatus(`❌ Erro: ${error.message}`, 'error');
+      }
+      
+      btn.disabled = false;
+    }
+    
+    function compareVersions(a, b) {
+      const parse = (v) => {
+        const match = String(v).match(/^(\d+)\.(\d+)\.(\d+)/);
+        return match ? [parseInt(match[1]), parseInt(match[2]), parseInt(match[3])] : [0, 0, 0];
+      };
+      
+      const av = parse(a), bv = parse(b);
+      for (let i = 0; i < 3; i++) {
+        if (av[i] > bv[i]) return 1;
+        if (av[i] < bv[i]) return -1;
+      }
+      return 0;
+    }
+    
+    function setAnalysis(results, comparison = 0) {
+      const analysisEl = document.getElementById('analysis');
+      
+      let html = '<div class="grid">';
+      
+      // Análise por fonte
+      html += '<div class="metric-card"><h3>Fontes Testadas</h3>';
+      results.forEach(r => {
+        const icon = r.success ? '✅' : '❌';
+        const status = r.success ? r.version : r.error;
+        html += `<div class="metric">${icon} ${r.source}: ${status}</div>`;
+      });
+      html += '</div>';
+      
+      // Análise de versão
+      html += '<div class="metric-card"><h3>Status da Versão</h3>';
+      if (comparison > 0) {
+        html += `<div class="metric" style="background: #d4edda;">🆕 Nova versão disponível</div>`;
+      } else if (comparison === 0) {
+        html += `<div class="metric" style="background: #d4edda;">✓ Atualizado</div>`;
+      } else {
+        html += `<div class="metric" style="background: #fff3cd;">⚠ Versão mais antiga</div>`;
+      }
+      html += '</div>';
+      
+      // Recomendações
+      html += '<div class="metric-card"><h3>Recomendações</h3>';
+      const failedSources = results.filter(r => !r.success);
+      if (failedSources.length > 0) {
+        html += `<div style="text-align: left; padding: 10px; background: #f8f9fa; border-radius: 8px;">`;
+        html += `<strong>Fontes com erro:</strong><br>`;
+        failedSources.forEach(r => {
+          html += `• ${r.source}: ${r.error}<br>`;
+        });
+        html += `</div>`;
+      }
+      html += '</div>';
+      
+      html += '</div>';
+      analysisEl.innerHTML = html;
+    }
+    
+    function resetDiagnostic() {
+      diagnosticLog = [];
+      document.getElementById('log').textContent = '';
+      setStatus('Aguardando teste...', 'info');
+      setMetric('appVersion', '-');
+      setMetric('publishedVersion', '-');
+      setMetric('swStatus', '-');
+      setMetric('cacheStatus', '-');
+      document.getElementById('analysis').innerHTML = '';
+      log('Diagnóstico resetado.', 'system');
+    }
+    
+    // Auto-teste ao carregar
+    window.addEventListener('load', () => {
+      log('Diagnóstico de atualização carregado.', 'system');
+      log('Clique em "Executar Diagnóstico Completo" para iniciar.', 'info');
+    });
+  </script>
+</body>
+</html>
