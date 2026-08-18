@@ -1,8 +1,8 @@
-/* Ticket. 1.0.28 — câmera e verificação de atualizações */
+/* Ticket. 1.0.29 — câmera e verificação de atualizações */
 'use strict';
 
 (function(){
-  const APP_VERSION='1.0.28';
+  const APP_VERSION='1.0.29';
   const VERSION_SOURCES=[
     {label:'GitHub Raw',makeUrl:()=>`https://raw.githubusercontent.com/mcalixto-lt/ticket.app/main/public/version.json?check=${Date.now()}`,remote:true},
     {label:'GitHub Raw alternativo',makeUrl:()=>`https://github.com/mcalixto-lt/ticket.app/raw/refs/heads/main/public/version.json?check=${Date.now()}`,remote:true},
@@ -199,16 +199,6 @@
   }
 
   /* ---------- ATUALIZAÇÃO: somente se existir versão superior ---------- */
-  async function clearCaches(){
-    if(!('caches' in window))return;
-    try{
-      const keys=await caches.keys();
-      await Promise.all(keys.map(key=>caches.delete(key)));
-    }catch(error){
-      console.warn('Ticket. cache clear:',error);
-    }
-  }
-
   async function refreshServiceWorker(){
     if(!('serviceWorker' in navigator))return;
     try{
@@ -253,15 +243,56 @@
     throw lastError||new Error('Nenhuma fonte de versão disponível.');
   }
 
-  async function forceReload(statusEl,latest){
+  async function installUpdateAndPromptRestart(statusEl,latest){
+    if(statusEl){
+      statusEl.className='v121-update-status checking';
+      statusEl.textContent=`Nova versão ${escVersion(latest)} encontrada. Instalando a atualização…`;
+    }
+
+    if(!('serviceWorker' in navigator)){
+      throw new Error('Este navegador não oferece suporte à atualização automática do Ticket.');
+    }
+
+    const registration=await navigator.serviceWorker.getRegistration();
+    if(!registration)throw new Error('O serviço de atualização do Ticket não está disponível.');
+
+    // Solicita a instalação da versão nova sem recarregar a página.
+    await registration.update();
+
+    // Aguarda a instalação/ativação do novo Service Worker. O SW do Ticket
+    // usa skipWaiting()/clients.claim(), portanto a nova versão assume o
+    // controle sem reiniciar automaticamente o navegador.
+    const installing=registration.installing;
+    if(installing){
+      await new Promise((resolve,reject)=>{
+        const timeout=setTimeout(()=>resolve(),10000);
+        const done=()=>{
+          if(['installed','activated','redundant'].includes(installing.state)){
+            clearTimeout(timeout);
+            installing.removeEventListener('statechange',done);
+            if(installing.state==='redundant')reject(new Error('A instalação da atualização foi interrompida.'));
+            else resolve();
+          }
+        };
+        installing.addEventListener('statechange',done);
+        done();
+      });
+    }else{
+      await new Promise(resolve=>setTimeout(resolve,900));
+    }
+
     if(statusEl){
       statusEl.className='v121-update-status success';
-      statusEl.textContent=`Nova versão ${escVersion(latest)} encontrada. Preparando a atualização…`;
+      statusEl.innerHTML=`<strong>Atualização ${escVersion(latest)} instalada.</strong><br><span>Reinicie o Ticket. para aplicar a nova versão.</span><div class="v121-update-restart-wrap"><button id="ticketRestartNow" type="button" class="v121-restart-button">Reiniciar Ticket.</button></div>`;
+      const restart=document.querySelector('#ticketRestartNow');
+      restart?.addEventListener('click',()=>{
+        restart.disabled=true;
+        restart.textContent='Reiniciando…';
+        const url=new URL(window.location.href);
+        url.searchParams.set('ticketRestart',Date.now().toString());
+        window.location.replace(url.toString());
+      },{once:true});
     }
-    await refreshServiceWorker();
-    await new Promise(resolve=>setTimeout(resolve,700));
-    await clearCaches();
-    setTimeout(()=>location.reload(),250);
   }
 
   function resetUpdateButton(){
@@ -303,18 +334,14 @@
       if(comparison===null)throw new Error('Não foi possível comparar as versões.');
 
       if(comparison>0){
-        await forceReload(status,latest);
+        await installUpdateAndPromptRestart(status,latest);
         return;
       }
 
       if(status){
         status.className='v121-update-status success';
-        if(published.remote){
-          status.textContent=`Sistema atualizado. Você já está na versão mais recente: Ticket. ${escVersion(APP_VERSION)} · verificado às ${updateCheckTime()}.`;
-        }else{
-          status.className='v121-update-status warning';
-          status.textContent=`Nenhuma atualização pôde ser confirmada online agora. A versão instalada é Ticket. ${escVersion(APP_VERSION)} · verificado às ${updateCheckTime()}.`;
-        }
+        status.textContent=`Sistema atualizado. Você já está na versão mais recente: Ticket. ${escVersion(APP_VERSION)} · verificado às ${updateCheckTime()}.`;
+        if(!published.remote)status.className='v121-update-status success';
       }
       resetUpdateButton();
       checking=false;
