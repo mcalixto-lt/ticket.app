@@ -1,0 +1,9 @@
+Ticket. v1.0.31 — correção da verificação de atualizações
+
+- Corrigida a consulta de versão que falhava por causa da rota catch-all do Render.
+- Removida a dependência de ./version.json e ./public/version.json como fonte principal.
+- Consulta agora usa jsDelivr, GitHub Raw e GitHub API como fontes remotas.
+- O sistema só considera atualização quando a versão remota é superior à instalada.
+- Se não houver versão superior, informa que o sistema está atualizado e não reinicia.
+- Cache do Service Worker atualizado para v129.
+- Mantida a câmera em 636 x 500 px e as demais alterações da v1.0.30.
