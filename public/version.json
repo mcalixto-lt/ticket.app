@@ -1,13 +1,12 @@
 {
-  "version": "1.0.34",
+  "version": "1.0.35",
   "name": "Ticket.",
   "releasedAt": "2026-08-18",
   "changelog": [
-    "Correção da verificação de atualizações em Configurações",
-    "Atualização somente quando a versão publicada for superior à instalada",
-    "Instalação da nova versão pelo Service Worker antes de solicitar reinicialização",
-    "Quando não houver versão superior, o sistema informa que está atualizado",
-    "Organização da Jornada Semanal dentro de Recursos do Ticket.",
-    "Jornada Semanal agora fica recolhida e abre somente quando o usuário clicar para configurar os dias e horários"
+    "Jornada Semanal agora possui uma página própria de configuração",
+    "Recursos do Ticket. mostra somente Armazenamento e Jornada Semanal",
+    "Jornada Semanal abre separadamente ao clicar no recurso",
+    "Configuração de Jornada Semanal preserva os dias e horários existentes",
+    "Correção da máscara visual de CPF para exibir somente os dois últimos dígitos"
   ]
 }
