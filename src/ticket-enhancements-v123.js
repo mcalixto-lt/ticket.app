@@ -1,12 +1,12 @@
-/* Ticket. 1.0.31 — verificação de atualizações corrigida e melhorada */
+/* Ticket. 1.0.31 — verificação de atualizações corrigida */
 'use strict';
 
 (function(){
   const APP_VERSION='1.0.31';
   const VERSION_SOURCES=[
-    {label:'jsDelivr',makeUrl:()=>`https://cdn.jsdelivr.net/gh/mcalixto-lt/ticket.app@main/public/version.json?t=${Date.now()}`,remote:true,kind:'json'},
-    {label:'GitHub Raw',makeUrl:()=>`https://raw.githubusercontent.com/mcalixto-lt/ticket.app/main/public/version.json?t=${Date.now()}`,remote:true,kind:'json'},
-    {label:'GitHub API',makeUrl:()=>`https://api.github.com/repos/mcalixto-lt/ticket.app/contents/public/version.json?ref=main&t=${Date.now()}`,remote:true,kind:'github-api'}
+    {label:'jsDelivr',makeUrl:()=>`https://cdn.jsdelivr.net/gh/mcalixto-lt/ticket.app@main/public/version.json?check=${Date.now()}`,remote:true,kind:'json'},
+    {label:'GitHub Raw',makeUrl:()=>`https://raw.githubusercontent.com/mcalixto-lt/ticket.app/main/public/version.json?check=${Date.now()}`,remote:true,kind:'json'},
+    {label:'GitHub API',makeUrl:()=>`https://api.github.com/repos/mcalixto-lt/ticket.app/contents/public/version.json?ref=main&check=${Date.now()}`,remote:true,kind:'github-api'}
   ];
 
   const CAMERA_WIDTH=636;
@@ -199,75 +199,53 @@
   }
 
   /* ---------- ATUALIZAÇÃO: somente se existir versão superior ---------- */
+  async function refreshServiceWorker(){
+    if(!('serviceWorker' in navigator))return;
+    try{
+      const registration=await navigator.serviceWorker.getRegistration();
+      if(registration)await registration.update();
+    }catch(error){
+      console.warn('Ticket. service worker update:',error);
+    }
+  }
+
   async function fetchPublishedVersion(){
     let lastError=null;
-    const results=[];
 
-    // Testa cada fonte com timeout
-    const promises = VERSION_SOURCES.map(async (source, index) => {
-      const timeout = 5000; // 5 segundos de timeout
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout')), timeout)
-      );
+    for(const source of VERSION_SOURCES){
+      try{
+        const url=source.makeUrl();
+        const response=await fetch(url,{
+          method:'GET',
+          cache:'no-store',
+          credentials:'omit',
+          headers:{'Accept':'application/json','Cache-Control':'no-cache','Pragma':'no-cache'}
+        });
+        if(!response.ok)throw new Error(`HTTP ${response.status}`);
+        const contentType=(response.headers.get('content-type')||'').toLowerCase();
+        const text=await response.text();
+        if(contentType.includes('text/html')||/^\s*<!doctype html/i.test(text))throw new Error('A fonte devolveu HTML em vez do arquivo de versão.');
 
-      const fetchPromise = (async () => {
-        try {
-          const url = source.makeUrl();
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), timeout);
-          
-          const response = await fetch(url, {
-            method: 'GET',
-            cache: 'no-store',
-            credentials: 'omit',
-            headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' },
-            signal: controller.signal
-          });
-          
-          clearTimeout(timeoutId);
-          
-          if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
-          
-          const contentType = (response.headers.get('content-type') || '').toLowerCase();
-          const text = await response.text();
-          if (contentType.includes('text/html') || /^\s*<!doctype html/i.test(text)) {
-            throw new Error('A fonte devolveu HTML em vez do arquivo de versão.');
-          }
-
-          let data;
-          if (source.kind === 'github-api') {
-            const api = JSON.parse(text);
-            if (!api?.content) throw new Error('Conteúdo da versão não encontrado na API do GitHub.');
-            const decoded = atob(String(api.content).replace(/\s/g, ''));
-            data = JSON.parse(decoded);
-          } else {
-            data = JSON.parse(text);
-          }
-
-          const version = String(data?.version || '').trim();
-          if (!normalizeVersion(version)) throw new Error('Versão publicada inválida.');
-
-          return { version, source: source.label, remote: true, success: true };
-        } catch (error) {
-          return { error: error.message, source: source.label, success: false };
+        let data;
+        if(source.kind==='github-api'){
+          const api=JSON.parse(text);
+          if(!api?.content)throw new Error('Conteúdo da versão não encontrado na API do GitHub.');
+          const decoded=atob(String(api.content).replace(/\s/g,''));
+          data=JSON.parse(decoded);
+        }else{
+          data=JSON.parse(text);
         }
-      })();
 
-      return Promise.race([fetchPromise, timeoutPromise]);
-    });
-
-    const results = await Promise.all(promises);
-
-    // Retorna a primeira fonte que funcionou
-    for (const result of results) {
-      if (result.success) {
-        console.log(`[Ticket.] Versão encontrada via ${result.source}: ${result.version}`);
-        return result;
+        const version=String(data?.version||'').trim();
+        if(!normalizeVersion(version))throw new Error('Versão publicada inválida.');
+        return {version,source:source.label,remote:true};
+      }catch(error){
+        lastError=error;
+        console.warn('Ticket. versão: fonte indisponível',source.label,error);
       }
-      console.warn(`[Ticket.] Falha na fonte ${result.source}: ${result.error}`);
     }
 
-    throw new Error('Todas as fontes de versão falharam. Erros: ' + results.map(r => `${r.source}(${r.error})`).join(', '));
+    throw lastError||new Error('Nenhuma fonte de versão disponível.');
   }
 
   async function installUpdateAndPromptRestart(statusEl,latest){
@@ -367,19 +345,16 @@
 
       if(status){
         status.className='v121-update-status success';
-        if(comparison===0){
-          status.textContent=`✓ Sistema atualizado. Você está na versão mais recente: Ticket. ${escVersion(APP_VERSION)} · verificado às ${updateCheckTime()}.`;
-        }else{
-          status.textContent=`⚠ Versão publicada (${escVersion(latest)}) é mais antiga que a instalada (${escVersion(APP_VERSION)}). Use a versão local.`;
-        }
+        status.textContent=`Sistema atualizado. Você já está na versão mais recente: Ticket. ${escVersion(APP_VERSION)} · verificado às ${updateCheckTime()}.`;
+        if(!published.remote)status.className='v121-update-status success';
       }
       resetUpdateButton();
       checking=false;
     }catch(error){
-      console.error('[Ticket.] ERRO na verificação de atualizações:', error);
+      console.error('Ticket. atualização:',error);
       if(status){
         status.className='v121-update-status error';
-        status.innerHTML=`✗ Não foi possível verificar atualizações.<br><small>${escVersion(error.message)}</small><br><small>Tente novamente às ${updateCheckTime()}.</small>`;
+        status.textContent=`Não foi possível procurar atualizações agora. Verifique sua conexão e tente novamente · ${updateCheckTime()}.`;
       }
       resetUpdateButton();
       checking=false;
@@ -459,16 +434,5 @@
         ensureVersionCard();
       }
     },700);
-  });
-  
-  // Verificação extra após carregamento completo
-  window.addEventListener('load',()=>{
-    setTimeout(()=>{
-      if(typeof state==='undefined')return;
-      if(state.view==='settings'){
-        ensureFinalSettingsOrder();
-        ensureVersionCard();
-      }
-    },100);
   });
 })();
