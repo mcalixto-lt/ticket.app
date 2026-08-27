@@ -1,4 +1,4 @@
-/* Ticket. 1.0.35 — jornada semanal organizada em painel */
+/* Ticket. 1.0.30 — organização das configurações */
 'use strict';
 
 function v130ResourcesWithScheduleCard(){
@@ -16,14 +16,9 @@ function v130ResourcesWithScheduleCard(){
         <strong>Armazenamento</strong>
         <small>Cópias das imagens, backup local e futura sincronização em nuvem.</small>
       </button>
-      <details class="v130-weekly-details">
-        <summary>
-          <span class="resource-icon purple">${v105DatabaseGlyph(21)}</span>
-          <span class="v130-weekly-summary-copy"><strong>Jornada Semanal</strong><small>Configure os dias e as horas previstas.</small></span>
-          <span class="v130-weekly-chevron" aria-hidden="true">›</span>
-        </summary>
-        <div class="v130-weekly-details-body">${weeklyScheduleCard()}</div>
-      </details>
+    </div>
+    <div class="v130-schedule-inside">
+      ${weeklyScheduleCard()}
     </div>
   </article>`;
 }
@@ -50,8 +45,8 @@ const v130BindSettingsBefore=bindSettings;
 bindSettings=function(){
   v130BindSettingsBefore();
   document.querySelectorAll('[data-resource-view]').forEach(btn=>{
-    if(btn.dataset.v130Bound==='1')return;
-    btn.dataset.v130Bound='1';
-    btn.addEventListener('click',()=>navigate(btn.dataset.resourceView));
+    const clone=btn.cloneNode(true);
+    btn.replaceWith(clone);
+    clone.addEventListener('click',()=>navigate(clone.dataset.resourceView));
   });
 };

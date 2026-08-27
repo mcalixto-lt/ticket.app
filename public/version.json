@@ -1,12 +1,5 @@
 {
-  "version": "1.0.35",
+  "version": "1.0.32",
   "name": "Ticket.",
-  "releasedAt": "2026-08-18",
-  "changelog": [
-    "Jornada Semanal agora possui uma página própria de configuração",
-    "Recursos do Ticket. mostra somente Armazenamento e Jornada Semanal",
-    "Jornada Semanal abre separadamente ao clicar no recurso",
-    "Configuração de Jornada Semanal preserva os dias e horários existentes",
-    "Correção da máscara visual de CPF para exibir somente os dois últimos dígitos"
-  ]
+  "releasedAt": "2026-08-27"
 }

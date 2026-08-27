@@ -1,0 +1,9 @@
+Ticket. 1.0.32 — Feriados, folgas e jornadas compensatórias
+
+- Cadastro de feriados e folgas.
+- Feriado trabalhado pode usar automaticamente a jornada de sábado.
+- 27/08/2026 — Nossa Senhora dos Prazeres (Maceió) já vem configurado como feriado municipal trabalhado com jornada de sábado e direito a folga compensatória pendente.
+- Calendário identifica feriados/folgas e mantém as batidas do dia.
+- Clique no dia do calendário mostra o evento e, quando existir, as batidas registradas.
+- Backup passa a incluir feriados e folgas.
+- Versão 1.0.32 / cache v130.
