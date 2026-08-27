@@ -1,7 +1,7 @@
 /* Ticket. 1.0.32 — Feriados, folgas e jornadas compensatórias */
 'use strict';
 (function(){
-  const APP_HOLIDAY_VERSION='1.0.32';
+  const APP_HOLIDAY_VERSION='1.0.33';
   const DEFAULT_HOLIDAYS=[
     {id:'2026-01-01-national',date:'2026-01-01',name:'Confraternização Universal',scope:'Nacional',type:'holiday',workMode:'off',compensationType:'none',compensationDate:'',note:''},
     {id:'2026-04-03-maceio',date:'2026-04-03',name:'Sexta-feira da Paixão',scope:'Municipal',type:'holiday',workMode:'off',compensationType:'none',compensationDate:'',note:''},
@@ -100,10 +100,27 @@
   };
 
   const originalSettingsView=settingsView;
+  // v1.0.33: configurações voltam ao fluxo vertical original, sem menu horizontal.
+  // Todas as seções permanecem organizadas em uma única coluna rolável, incluindo Feriados e Folgas.
   settingsView=function(){
-    const tabs=[['schedule','Jornada semanal'],['balance','Saldo anterior'],['closing','Período de fechamento'],['holidays','Feriados e folgas'],['appearance','Aparência']];
-    const content=state.settingsTab==='balance'?balanceSettings():state.settingsTab==='closing'?closingSettings():state.settingsTab==='holidays'?holidaySettings():state.settingsTab==='appearance'?appearanceSettings():scheduleSettings();
-    return `${head('Configurações','Ajuste jornada, saldo, fechamento, feriados e folgas.')}<div class="settings-layout"><nav class="settings-menu">${tabs.map(([k,l])=>`<button data-setting="${k}" class="${state.settingsTab===k?'active':''}"><span>${l}</span>${icon('chev',17)}</button>`).join('')}</nav><section class="settings-detail">${content}</section></div>`;
+    return `<section class="settings-full">
+      <div class="settings-page-intro">
+        <span class="settings-kicker">PREFERÊNCIAS</span>
+        <h2>Configurações</h2>
+        <p>Defina a jornada, saldo, fechamento, feriados e folgas. Registros já confirmados permanecem bloqueados.</p>
+      </div>
+      <div class="settings-stack">
+        ${identificationCard()}
+        ${v106HowToSettingsCard()}
+        ${balanceCard()}
+        ${closingCard()}
+        ${v130ResourcesWithScheduleCard()}
+        <article class="settings-section-card ticket-holiday-settings-card">
+          ${holidaySettings()}
+        </article>
+        ${deviceCards()}
+      </div>
+    </section>`;
   };
 
   const originalBindSettings=bindSettings;

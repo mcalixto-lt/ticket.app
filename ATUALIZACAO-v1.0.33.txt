@@ -1,0 +1,8 @@
+Ticket. 1.0.33 — Configurações em fluxo vertical
+
+- Restaurado o layout organizado e vertical da página Configurações.
+- Removido o menu horizontal/rolagem lateral das configurações.
+- Todas as configurações podem ser percorridas verticalmente com rolagem normal.
+- Mantidos os recursos recentes: Jornada Semanal dentro de Recursos do Ticket, Saldo Anterior, Período de Fechamento, Feriados e Folgas, armazenamento, identificação, Como Usar e sessão/dispositivo.
+- Feriados e folgas continuam integrados ao calendário e às jornadas compensatórias.
+- Versão 1.0.33 / cache v131.
