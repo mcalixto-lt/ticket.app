@@ -1,0 +1,11 @@
+Ticket. 1.0.34 — correção controlada de horário
+
+- Mantida a proteção/imutabilidade dos registros já salvos.
+- Adicionada correção controlada de horário: o usuário pode corrigir o registro do dia uma única vez.
+- A correção é permitida somente no registro da data atual.
+- Depois da confirmação, o registro volta a ficar bloqueado e uma nova correção na mesma data é impedida.
+- A alteração guarda histórico com horário anterior, novo horário, data/hora da correção e motivo opcional.
+- O cálculo da jornada, saldo e horas extras é recalculado automaticamente após a correção.
+- Correção inicial incluída para o caso de 02/09/2026: Retorno do almoço 02:00 → 14:00, preservando o histórico da correção.
+- Registros e evidências continuam com política append-only; a correção não remove a proteção geral.
+- Versão 1.0.34 / cache v132.
