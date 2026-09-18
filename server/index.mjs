@@ -1,5 +1,7 @@
 import express from 'express';
 import { GoogleGenAI, ThinkingLevel } from '@google/genai';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const app=express();
 app.set('trust proxy',1);
@@ -13,9 +15,11 @@ const WEB_SEARCH_ENABLED=String(process.env.GEMINI_WEB_SEARCH||'true').toLowerCa
 const explicitOrigins=String(process.env.ALLOWED_ORIGINS||'').split(',').map(v=>v.trim()).filter(Boolean);
 const usage=new Map();
 const ai=new GoogleGenAI({apiKey:process.env.GEMINI_API_KEY||''});
+const WEB_ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 
-function originAllowed(origin=''){
+function originAllowed(origin='',host=''){
   if(!origin)return true;
+  try{if(new URL(origin).host===host)return true;}catch{}
   if(explicitOrigins.includes(origin))return true;
   if(/^https:\/\/ticket-app(?:-[a-z0-9-]+)?\.onrender\.com$/i.test(origin))return true;
   if(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin))return true;
@@ -24,12 +28,13 @@ function originAllowed(origin=''){
 
 app.use((req,res,next)=>{
   const origin=req.headers.origin||'';
-  if(origin&&originAllowed(origin))res.setHeader('Access-Control-Allow-Origin',origin);
+  const allowed=originAllowed(origin,req.headers.host||'');
+  if(origin&&allowed)res.setHeader('Access-Control-Allow-Origin',origin);
   res.setHeader('Vary','Origin');
   res.setHeader('Access-Control-Allow-Headers','Content-Type');
   res.setHeader('Access-Control-Allow-Methods','POST,GET,OPTIONS');
-  if(req.method==='OPTIONS')return originAllowed(origin)?res.sendStatus(204):res.sendStatus(403);
-  if(origin&&!originAllowed(origin))return res.status(403).json({error:'Origem não autorizada.'});
+  if(req.method==='OPTIONS')return allowed?res.sendStatus(204):res.sendStatus(403);
+  if(origin&&!allowed)return res.status(403).json({error:'Origem não autorizada.'});
   next();
 });
 
@@ -98,7 +103,7 @@ app.get('/health',(req,res)=>res.json({
   webSearch:WEB_SEARCH_ENABLED,
   configured:Boolean(process.env.GEMINI_API_KEY),
   mode:'general-web-assistant',
-  version:'1.0.11'
+  version:'1.0.71'
 }));
 
 app.post('/api/chat',rateLimit,async(req,res)=>{
@@ -153,4 +158,19 @@ app.post('/api/chat',rateLimit,async(req,res)=>{
   return res.status(503).json({error:'O Gemini não respondeu agora. O Ticket tentou automaticamente outra rota.',code:'gemini_unavailable',attempts});
 });
 
-app.listen(PORT,'0.0.0.0',()=>console.log(`Ticket Gemini AI API 1.0.11 listening on ${PORT}; fast ${FAST_MODEL}; search ${SEARCH_MODEL}; smart ${SMART_MODEL}`));
+const staticOptions={index:false,setHeaders(res,file){
+  if(file.endsWith('index.html')||file.endsWith('config.js')||file.endsWith('version.json'))res.setHeader('Cache-Control','no-cache');
+  else res.setHeader('Cache-Control','public, max-age=3600');
+}};
+app.use('/src',express.static(path.join(WEB_ROOT,'src'),staticOptions));
+app.use('/public',express.static(path.join(WEB_ROOT,'public'),staticOptions));
+app.get('/app.js',(req,res)=>res.sendFile(path.join(WEB_ROOT,'app.js')));
+app.get('/version.json',(req,res)=>{res.setHeader('Cache-Control','no-cache');res.sendFile(path.join(WEB_ROOT,'version.json'));});
+app.get(['/','/index.html'],(req,res)=>{res.setHeader('Cache-Control','no-cache');res.sendFile(path.join(WEB_ROOT,'index.html'));});
+app.use((req,res,next)=>{
+  const hasHiddenSegment=req.path.split('/').some(segment=>segment.startsWith('.'));
+  if(req.method==='GET'&&!hasHiddenSegment&&!path.extname(req.path)&&req.accepts('html'))return res.sendFile(path.join(WEB_ROOT,'index.html'));
+  next();
+});
+
+app.listen(PORT,'0.0.0.0',()=>console.log(`Ticket 1.0.71 listening on ${PORT}; fast ${FAST_MODEL}; search ${SEARCH_MODEL}; smart ${SMART_MODEL}`));

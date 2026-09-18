@@ -38,7 +38,7 @@ button,a,label,[role="button"]{touch-action:manipulation}
 .record-evidence-dialog footer small{font-size:.58rem;text-align:right;overflow-wrap:anywhere}
 .evidence-modal-open{overflow:hidden}
 
-@media(max-width:760px){
+@container ticket (max-width:760px){
   .record-evidence-strip{margin-top:9px;padding-top:10px}
   .record-evidence-title{margin-bottom:8px}
   .record-evidence-title>small{font-size:.53rem}

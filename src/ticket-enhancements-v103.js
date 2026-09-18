@@ -236,7 +236,7 @@ bindSettings=function(){
     if(d.type==='negative') mins*=-1;
     if(d.type==='none') mins=0;
     const item={minutes:mins,previousMinutes:previous,referenceDate:d.referenceDate,note:d.note,changedAt:new Date().toISOString()};
-    state.balance={minutes:mins,referenceDate:d.referenceDate,note:d.note,history:[...(state.balance.history||[]),item]};
+    state.balance={...state.balance,minutes:mins,referenceDate:d.referenceDate,note:d.note,history:[...(state.balance.history||[]),item]};
     await saveSetting(state.profile.cpf,'balance',state.balance);
     toast('Saldo anterior salvo.');
     renderView();

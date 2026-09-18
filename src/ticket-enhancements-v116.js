@@ -26,7 +26,7 @@ function v116ResetCaptureState(){
   state.environmentConfirmedV115=false;
 }
 
-function v116DestinationChoice(){
+function v116DestinationChoice(action){
   if(!state.receiptFile)return '';
   const selected=state.captureDestinationV116;
   return `<section class="v116-destination-block">
@@ -34,7 +34,7 @@ function v116DestinationChoice(){
     <div class="v116-destination-grid">
       <button type="button" class="v116-destination ${selected==='point'?'active point':''}" data-v116-destination="point">
         <span class="v116-destination-icon point">${icon('save',20)}</span>
-        <span><strong>Registrar como ponto</strong><small>Usar a foto como comprovante da próxima batida.</small></span>
+        <span><strong>${action.title}</strong><small>Usar a foto como comprovante do registro de ${action.label}.</small></span>
       </button>
       <button type="button" class="v116-destination ${selected==='environment'?'active environment':''}" data-v116-destination="environment">
         <span class="v116-destination-icon environment">${v105CameraGlyph(20)}</span>
@@ -44,10 +44,18 @@ function v116DestinationChoice(){
   </section>`;
 }
 
-function v116PointControls(){
+function v116PointControls(action){
   if(!state.receiptFile||state.captureDestinationV116!=='point')return '';
   return `<div class="v105-appearance"><span>Como deseja salvar a fotografia?</span><div class="v105-appearance-switch"><button type="button" data-photo-mode="color" class="${state.captureAppearance==='color'?'active':''}">Em cores</button><button type="button" data-photo-mode="contrast" class="${state.captureAppearance==='contrast'?'active':''}">Alto contraste</button></div></div>
-  <button id="informDateTimeV105" type="button" class="v105-date-time-btn">${v105EditGlyph(19)} Informar DATA e HORA</button>`;
+  <button id="informDateTimeV105" type="button" class="v105-date-time-btn">${v105EditGlyph(19)} Informar data e hora da ${action.label}</button>`;
+}
+
+function v116PunchContext(){
+  const info=v105NextPunchInfo(todayIso());
+  const action=v105RegisterAction(info.type);
+  const total=info.order.length||4;
+  const position=info.index>=0?info.index+1:total;
+  return {info,action,total,position};
 }
 
 function v116EnvironmentCard(){
@@ -76,18 +84,24 @@ function v116EnvironmentCard(){
 captureView=function(){
   const hasPhoto=Boolean(state.receiptFile);
   const pointSelected=state.captureDestinationV116==='point';
-  return `${head('Registrar ponto','Capture uma fotografia e escolha se ela será usada como comprovante de ponto ou como foto do ambiente.')}
+  const context=v116PunchContext();
+  const action=context.action;
+  return `${head(action.title,`Capture o comprovante para registrar ${action.label} com segurança.`)}
   <div class="v105-capture-page v106-capture-page v116-capture-page">
+    <section class="v155-punch-context ${context.info.type||'done'}">
+      <span class="v155-punch-icon">${homePremiumIcon(context.info.type||'clock',27)}</span>
+      <div><small>PRÓXIMA BATIDA</small><strong>${action.title}</strong><p>${context.info.type?`${context.position}ª de ${context.total} batidas previstas para hoje.`:'Todos os registros previstos para hoje foram concluídos.'}</p></div>
+      <b>${context.info.type?`${context.position}/${context.total}`:'✓'}</b>
+    </section>
     <article class="panel v105-capture-card v116-main-capture-card">
-      <div class="v105-capture-title"><div><span class="v105-kicker">CAPTURAR FOTOGRAFIA</span><h3>Fotografe o comprovante</h3><p>Enquadre bem a imagem. Depois da captura, escolha se ela será registrada como ponto ou como foto do ambiente.</p></div><span class="v105-camera-icon">${v105CameraGlyph(24)}</span></div>
-      <div class="v105-camera-frame" id="cameraStage"><video id="cameraVideo" class="hidden" playsinline muted></video>${state.receiptUrl?`<img src="${state.receiptUrl}" alt="Fotografia capturada" draggable="false">`:`<div class="v105-camera-empty">${v105CameraGlyph(42)}<strong>Câmera pronta</strong><span>Use a galeria ou a câmera.</span></div>`}<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></div>
+      <div class="v105-capture-title"><div><span class="v105-kicker">${action.title.toLocaleUpperCase('pt-BR')}</span><h3>Comprovante da ${action.label}</h3><p>Enquadre bem a imagem. Depois da captura, confirme se ela será usada neste registro ou como foto do ambiente.</p></div><span class="v105-camera-icon">${v105CameraGlyph(24)}</span></div>
+      <div class="v105-camera-frame" id="cameraStage"><video id="cameraVideo" class="hidden" playsinline muted></video>${state.receiptUrl?`<img src="${state.receiptUrl}" alt="Fotografia capturada" draggable="false">`:`<div class="v105-camera-empty">${v105CameraGlyph(42)}<strong>Câmera pronta</strong><span>Toque em Capturar para abrir a câmera.</span></div>`}<i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></div>
       ${v106QualityMarkup()}
-      <div class="v105-camera-toolbar v106-camera-toolbar">
-        <label class="v105-round-action v106-gallery-action" title="Abrir galeria" aria-label="Abrir galeria">${v105ImageGlyph(22)}<input id="receiptPicker" type="file" accept="image/*" hidden></label>
-        <button id="startCamera" type="button" class="v106-camera-capture" title="Abrir câmera" aria-label="Abrir câmera">${v105CameraGlyph(25)}</button>
+      <div class="v105-camera-toolbar v106-camera-toolbar v156-camera-toolbar">
+        <div class="v157-capture-control"><button id="startCamera" type="button" class="v106-camera-capture v156-capture-action" title="Capturar" aria-label="Capturar comprovante"><span class="v156-capture-action-icon">${v105CameraGlyph(25)}</span></button><span class="v157-capture-label">Capturar</span></div>
       </div>
-      ${v116DestinationChoice()}
-      ${v116PointControls()}
+      ${v116DestinationChoice(action)}
+      ${v116PointControls(action)}
     </article>
     ${hasPhoto&&pointSelected?v105CaptureInformationCard():''}
     ${v116EnvironmentCard()}
@@ -198,7 +212,6 @@ submitCapture=async function(event){
 };
 
 bindCapture=function(){
-  document.querySelector('#receiptPicker')?.addEventListener('change',async e=>{const file=e.target.files?.[0];if(file)await setFile('receipt',file);});
   document.querySelector('#startCamera')?.addEventListener('click',startCamera);
   document.querySelectorAll('[data-v116-destination]').forEach(btn=>btn.addEventListener('click',()=>v116ChooseDestination(btn.dataset.v116Destination)));
   document.querySelectorAll('[data-photo-mode]').forEach(btn=>btn.addEventListener('click',async()=>{await v106ApplyReceiptMode(btn.dataset.photoMode,true);}));

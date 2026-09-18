@@ -46,7 +46,7 @@
 .schedule-rich-card .schedule-fields input,.schedule-rich-card .schedule-fields select{min-height:35px!important;height:35px!important;border-radius:10px!important;padding:5px 8px!important;font-size:.72rem!important}
 .schedule-rich-card .schedule-top-save{min-height:38px!important;height:38px!important}
 
-@media(max-width:760px){
+@container ticket (max-width:760px){
   .v105-capture-card{padding:16px!important}.v105-camera-frame{height:330px!important}
   .v105-quality{padding:9px 2px!important;gap:6px!important}.v105-quality strong{font-size:.72rem}.v105-quality span{width:100%;padding-left:17px;font-size:.64rem}
   .v106-environment-top{display:block}.v106-environment-top .v105-env-action{width:100%;margin-top:10px}
@@ -59,7 +59,7 @@
   .schedule-rich-card .schedule-fields{grid-template-columns:1fr 1fr!important;gap:3px 5px!important}
   .schedule-rich-card .schedule-fields input,.schedule-rich-card .schedule-fields select{min-height:33px!important;height:33px!important;font-size:.69rem!important}
 }
-@media(max-width:390px){
+@container ticket (max-width:390px){
   .v105-camera-frame{height:300px!important}.v106-camera-toolbar{gap:28px!important}
   .schedule-rich-card{padding:12px!important}.schedule-rich-card .schedule-top-save{min-width:96px!important;font-size:.66rem!important}
   .schedule-rich-card .schedule-day-title>span:last-child{display:none}
