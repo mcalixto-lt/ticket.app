@@ -54,7 +54,7 @@
 @keyframes v111Fade{from{opacity:0}to{opacity:1}}
 @keyframes v111Pop{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
 
-@media(max-width:760px){
+@container ticket (max-width:760px){
   .v111-calendar-selector{width:auto}
   .v111-calendar-selector .input-compact{min-width:145px;width:145px}
   .v111-calendar-card{padding:12px}

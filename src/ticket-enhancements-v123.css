@@ -116,13 +116,13 @@
   margin:0!important;
 }
 
-@media(max-width:900px){
+@container ticket (max-width:900px){
   .v122-settings-final-grid{
     grid-template-columns:1fr!important;
   }
 }
 
-@media(max-width:760px){
+@container ticket (max-width:760px){
   /*
     A largura continua centralizada e limitada a 636 px.
     A altura permanece 500 px, conforme solicitado.

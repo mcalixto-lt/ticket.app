@@ -32,7 +32,7 @@
 .v115-env-register:disabled{opacity:.42;cursor:not-allowed;box-shadow:none}
 .v115-env-register.registered{background:linear-gradient(180deg,#22b679,#11945f);box-shadow:0 10px 22px rgba(18,151,96,.18)}
 
-@media(max-width:760px){
+@container ticket (max-width:760px){
   .v115-env-frame{min-height:240px!important}
   .v115-env-title{align-items:flex-start}
   .v115-env-register{min-height:48px}

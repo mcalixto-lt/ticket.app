@@ -1,23 +1,10 @@
 services:
   - type: web
     name: ticket-app
-    runtime: static
-    branch: main
-    autoDeployTrigger: commit
-    buildCommand: "echo Ticket.app 1.0.30 - static site"
-    staticPublishPath: .
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-
-  - type: web
-    name: ticket-app-ai
     runtime: node
     branch: main
-    rootDir: server
     autoDeployTrigger: commit
-    buildCommand: npm install
+    buildCommand: npm ci
     startCommand: npm start
     healthCheckPath: /health
     envVars:

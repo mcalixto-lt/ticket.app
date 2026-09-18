@@ -24,7 +24,7 @@
 @keyframes v114AiSoftBlink{0%,100%{opacity:.025}50%{opacity:.09}}
 @keyframes v114AiIconGlow{0%,100%{opacity:.78;filter:drop-shadow(0 1px 3px rgba(81,58,160,.08))}50%{opacity:1;filter:drop-shadow(0 3px 7px rgba(81,58,160,.18))}}
 
-@media(max-width:760px){
+@container ticket (max-width:760px){
   .mobile-brand .v114-weather-launcher{min-width:108px!important;height:36px!important;padding:0 7px!important;gap:6px!important}
   .mobile-brand .v114-weather-glyph{width:28px!important;height:28px!important;flex-basis:28px}
   .mobile-brand .v114-weather-glyph svg{width:21px;height:21px}
@@ -32,7 +32,7 @@
   .mobile-brand .v114-weather-values strong{font-size:.69rem!important}
   .mobile-brand .v114-weather-values time{font-size:.64rem}
 }
-@media(max-width:390px){
+@container ticket (max-width:390px){
   .mobile-brand .v114-weather-launcher{min-width:101px!important;padding-left:6px!important;padding-right:6px!important}
   .mobile-brand .v114-weather-values strong{font-size:.66rem!important}
   .mobile-brand .v114-weather-values time{font-size:.61rem}

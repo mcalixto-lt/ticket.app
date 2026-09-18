@@ -90,7 +90,7 @@ submitCapture=async function(event){
   await v111SubmitCaptureBefore(event);
   const after=state.records.find(r=>r.date===date);
   const afterCount=(after?.punches||[]).length;
-  if(after&&afterCount>beforeCount&&date===todayIso()&&calculateRecord(after,state.schedule).complete){
+  if(state.view!=='dashboard'&&after&&afterCount>beforeCount&&date===todayIso()&&calculateRecord(after,state.schedule).complete){
     setTimeout(()=>v111JourneyCompleteModal(after),120);
   }
 };

@@ -87,15 +87,18 @@
   const originalCalendarView=calendarView;
   calendarView=function(){
     const [y,m]=state.calendarMonth.split('-').map(Number);const first=new Date(y,m-1,1,12);const last=new Date(y,m,0,12);const lead=(first.getDay()+6)%7;const cells=[];for(let i=0;i<lead;i++)cells.push(null);for(let d=1;d<=last.getDate();d++)cells.push(`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`);while(cells.length%7)cells.push(null);
-    const nav=`<div class="toolbar"><button id="calPrev" class="secondary">‹</button><input id="calMonth" class="input-compact" type="month" value="${state.calendarMonth}"><button id="calNext" class="secondary">›</button></div>`;
+    const months=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    const years=Array.from({length:201},(_,i)=>1900+i);
+    if(!years.includes(y))years.push(y);
+    const nav=`<div class="calendar-selectors-v161"><label><span>Mês</span><select id="calMonthSelect" aria-label="Selecionar mês">${months.map((name,i)=>`<option value="${i+1}" ${m===i+1?'selected':''}>${name}</option>`).join('')}</select></label><span class="calendar-divider-v161" aria-hidden="true">|</span><label><span>Ano</span><select id="calYearSelect" aria-label="Selecionar ano">${years.sort((a,b)=>a-b).map(year=>`<option value="${year}" ${year===y?'selected':''}>${year}</option>`).join('')}</select></label></div>`;
     return `${head('Calendário','Feriados, folgas, jornadas compensatórias e registros do ponto.',nav)}<article class="calendar-card"><div class="calendar-week"><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span></div><div class="calendar-grid">${cells.map(iso=>{if(!iso)return'<div></div>';const r=state.records.find(x=>x.date===iso);const c=r?calculateRecord(r,state.schedule):null;const h=holidayForDate(iso);const sch=effectiveScheduleForDate(iso,state.schedule);const dots=[];if(r){dots.push(`<i class="dot ${c.complete?'complete':'pending'}"></i>`);if(c.complete&&c.balanceMinutes>0)dots.push('<i class="dot positive"></i>');if(c.complete&&c.balanceMinutes<0)dots.push('<i class="dot negative"></i>');}if(h)dots.push(`<i class="dot holiday-dot"></i>`);return `<button class="day ${!sch.active&&!h?'off':''} ${h?'holiday-day':''} ${iso===todayIso()?'today':''}" data-day="${iso}" title="${safeEsc(h?`${h.name} — ${holidayStatus(h,r)}`:'')}"><b>${Number(iso.slice(8))}</b><div class="dots">${dots.join('')}</div>${h?`<small class="holiday-label">${safeEsc(h.workMode==='saturday'?'Sáb':'Folga')}</small>`:''}</button>`;}).join('')}</div></article><div class="ticket-holiday-legend"><span><i class="dot holiday-dot"></i> Feriado/folga</span><span><i class="dot complete"></i> Ponto registrado</span><span><i class="dot positive"></i> Saldo positivo</span></div>`;
   };
 
   const originalBindCalendar=bindCalendar;
   bindCalendar=function(){
-    document.querySelector('#calMonth').onchange=e=>{state.calendarMonth=e.target.value;renderView();};
-    const shift=n=>{const [y,m]=state.calendarMonth.split('-').map(Number);const d=new Date(y,m-1+n,1,12);state.calendarMonth=monthKey(todayIso(d));renderView();};
-    document.querySelector('#calPrev').onclick=()=>shift(-1);document.querySelector('#calNext').onclick=()=>shift(1);
+    const month=document.querySelector('#calMonthSelect'),year=document.querySelector('#calYearSelect');
+    const update=()=>{state.calendarMonth=`${year.value}-${month.value.padStart(2,'0')}`;renderView();};
+    month.onchange=update;year.onchange=update;
     document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>renderHolidayCalendarDetails(b.dataset.day));
   };
 
@@ -111,13 +114,14 @@
       </div>
       <div class="settings-stack">
         ${identificationCard()}
-        ${v106HowToSettingsCard()}
+        ${weeklyScheduleCard()}
         ${balanceCard()}
         ${closingCard()}
-        ${v130ResourcesWithScheduleCard()}
         <article class="settings-section-card ticket-holiday-settings-card">
           ${holidaySettings()}
         </article>
+        <article class="settings-section-card"><h3>Armazenamento</h3><button class="secondary" data-resource-view="storage">Gerenciar armazenamento</button></article>
+        ${v106HowToSettingsCard()}
         ${deviceCards()}
       </div>
     </section>`;

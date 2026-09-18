@@ -1,5 +1,5 @@
 /* Ticket. — ajuste de apresentação da tela de acesso no mobile */
-@media (max-width: 760px) {
+@container ticket (max-width: 760px) {
   .auth-page {
     display: block;
     min-height: 100vh;
@@ -80,7 +80,7 @@
   }
 }
 
-@media (max-width: 390px) {
+@container ticket (max-width: 390px) {
   .auth-hero {
     padding-left: 18px;
     padding-right: 18px;

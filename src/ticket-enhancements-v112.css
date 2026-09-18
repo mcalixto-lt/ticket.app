@@ -40,7 +40,7 @@
 .v112-motion .dashboard-grid .stats .stat:nth-child(4) .stat-icon{animation-delay:.96s!important}
 @keyframes v112StatMotion{0%,100%{transform:translate3d(0,0,0) rotate(0deg)}30%{transform:translate3d(0,-2px,0) rotate(-2deg)}60%{transform:translate3d(1px,1px,0) rotate(1.5deg)}82%{transform:translate3d(-1px,0,0) rotate(-.7deg)}}
 
-@media(max-width:760px){
+@container ticket (max-width:760px){
   .ticket-boot-tile{width:126px;height:126px;border-radius:34px}
   .ticket-boot-logo{width:90px;height:90px}
   .v112-calendar-head{display:grid;grid-template-columns:minmax(0,1fr) 164px;gap:10px;align-items:center}
@@ -50,7 +50,7 @@
   .v112-flow .flow-link{margin-top:22.5px!important}
 }
 
-@media(max-width:390px){
+@container ticket (max-width:390px){
   .v112-calendar-head{grid-template-columns:minmax(0,1fr) 154px;gap:8px}
   .v112-calendar-selector{width:154px;min-width:154px;padding-left:8px;padding-right:26px}
   .v112-calendar-selector::after{right:8px}

@@ -17,6 +17,7 @@ records:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
 report:'<path d="M5 20V10M12 20V4M19 20v-7"/>',
 calendar:'<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M8 3v4M16 3v4M3.5 9.5h17"/>',
 more:'<circle cx="5" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.2" fill="currentColor" stroke="none"/>',
+bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>',
 entry:'<path d="M10 4H5v16h5"/><path d="m13 8 4 4-4 4"/><path d="M17 12H8"/>',
 lunch:'<path d="M7 3v7M4 3v5a2 2 0 0 0 4 0V3M6 10v11"/><path d="M15 3v8c0 1.7 1.3 3 3 3V3M18 14v7"/>',
 return:'<path d="m8 5 10 7-10 7z"/><path d="M5 5v14"/>',
@@ -38,7 +39,30 @@ search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
 filter:'<path d="M4 5h16l-6 7v5l-4 2v-7z"/>',
 };
 function icon(name,size=20,cls=''){return `<svg class="icon ${cls}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.clock}</svg>`;}
-function brand(){return `<span class="brand-mark"><svg viewBox="0 0 32 32"><path d="M8.3 8.5A10.4 10.4 0 1 1 6 18" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"/><path d="M4.6 8.5h7.7v7.7" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/><path d="m5 8.8 6.8 6.8" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"/></svg></span><strong class="brand-word">Ticket<span>.</span></strong>`;}
+function homePremiumIcon(name,size=27){
+  const premium={
+    entry:'<path d="M5 4.5h9v15H5z" fill="currentColor" fill-opacity=".09"/><path d="M14 7V4.5H5v15h9V17M21 12H9M12.5 8.5 9 12l3.5 3.5"/>',
+    lunch:'<path d="M5 15a7 7 0 0 1 14 0" fill="currentColor" fill-opacity=".09"/><path d="M4 15h16M7 19h10M12 8V5M10 5h4"/>',
+    return:'<path d="M5.5 8.5A8 8 0 1 1 5 15"/><path d="M5.5 3.5v5h5"/><path d="m11 9 5 3-5 3z" fill="currentColor" fill-opacity=".16"/>',
+    exit:'<path d="M10 4.5h9v15h-9" fill="currentColor" fill-opacity=".09"/><path d="M10 7V4.5h9v15h-9V17M3 12h12M11.5 8.5 15 12l-3.5 3.5"/>',
+    clock:'<circle cx="12" cy="12" r="8.5" fill="currentColor" fill-opacity=".08"/><path d="M12 7.5V12l3 2"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/>',
+    overtime:'<circle cx="10" cy="13" r="7" fill="currentColor" fill-opacity=".07"/><path d="M10 9v4l2.5 1.5M16 3l-3 6h4l-2 5"/>',
+    bank:'<path d="M7 4h10M7 20h10M8 4c0 4 1.5 5.5 4 8-2.5 2.5-4 4-4 8M16 4c0 4-1.5 5.5-4 8 2.5 2.5 4 4 4 8"/><path d="M10 17h4" stroke-width="2.3"/>',
+    target:'<circle cx="11" cy="13" r="8" fill="currentColor" fill-opacity=".07"/><circle cx="11" cy="13" r="4"/><circle cx="11" cy="13" r="1" fill="currentColor"/><path d="m14 10 6-6M16 4h4v4"/>'
+  };
+  return `<svg class="home-premium-svg-v152" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${premium[name]||premium.clock}</svg>`;
+}
+function dockPremiumIcon(name,size=31){
+  const dock={
+    home:'<path d="m3.5 11 8.5-7 8.5 7v8.5H3.5z" fill="currentColor" fill-opacity=".08"/><path d="M8.5 19.5v-6h7v6M3.5 11l8.5-7 8.5 7"/>',
+    records:'<rect x="4" y="3.5" width="16" height="17" rx="4" fill="currentColor" fill-opacity=".07"/><path d="M8 8h5M8 12h4M8 16h3"/><circle cx="16.5" cy="14.5" r="3.5"/><path d="M16.5 12.7v2l1.3.8"/>',
+    report:'<rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="currentColor" fill-opacity=".07"/><path d="M7 16v-4M12 16V8M17 16v-6"/><path d="m7 8 4-2 3 2 3-3"/>',
+    calendar:'<rect x="3.5" y="5" width="17" height="15.5" rx="4" fill="currentColor" fill-opacity=".07"/><path d="M8 3v4M16 3v4M3.5 9.5h17"/><circle cx="9" cy="14" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="14" r="1" fill="currentColor" stroke="none"/>',
+    more:'<rect x="4" y="4" width="6" height="6" rx="2" fill="currentColor" fill-opacity=".14"/><rect x="14" y="4" width="6" height="6" rx="2" fill="currentColor" fill-opacity=".14"/><rect x="4" y="14" width="6" height="6" rx="2" fill="currentColor" fill-opacity=".14"/><rect x="14" y="14" width="6" height="6" rx="2" fill="currentColor" fill-opacity=".14"/>'
+  };
+  return `<svg class="dock-premium-svg-v154" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${dock[name]||dock.more}</svg>`;
+}
+function brand(){return `<span class="brand-mark"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M7.5 15v-2.5a8.5 8.5 0 0 1 17 0V15"/><path d="M10.8 16v-3.5a5.2 5.2 0 0 1 10.4 0v4.2c0 3.8-1.1 7.2-3.2 10"/><path d="M14 15.5v-3a2 2 0 0 1 4 0v4.3c0 3.3-.9 6.2-2.5 8.8"/><path d="M7.8 18.5c.4 3 1.5 5.6 3.3 7.8"/><path d="m21.5 23 2 2 4-5" stroke-width="2.2"/></svg></span><strong class="brand-word">Ticket<span>.</span></strong>`;}
 
 const DEFAULT_SCHEDULE = {
   0: { active:false, requiredPunches:0, expectedMinutes:0 },
@@ -68,6 +92,23 @@ function formatDateBr(iso){ if(!iso) return '--/--/----'; const [y,m,d]=iso.spli
 function formatMonthLabel(key){ const [y,m]=key.split('-').map(Number); return new Intl.DateTimeFormat('pt-BR',{month:'long',year:'numeric'}).format(new Date(y,m-1,1)); }
 function longDate(iso=todayIso()){ return new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).format(new Date(`${iso}T12:00:00`)); }
 function timeNow(){ const d=new Date(); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
+const POINT_REMINDERS=[480,720,780,840,900,1080].map(minutes=>({minutes,label:'Ponto',time:`${String(Math.floor(minutes/60)).padStart(2,'0')}:00`}));
+function pointReminderStatus(now=new Date()){
+  const current=now.getHours()*60+now.getMinutes();
+  const reminder=POINT_REMINDERS.find(item=>item.minutes-current>=0&&item.minutes-current<=5);
+  return reminder?{...reminder,minutesLeft:reminder.minutes-current}:null;
+}
+function nextPointReminder(now=new Date()){
+  const current=now.getHours()*60+now.getMinutes();
+  return POINT_REMINDERS.find(item=>item.minutes>=current)||POINT_REMINDERS[0];
+}
+function reminderMessage(reminder){return reminder.minutesLeft===0?`Agora é hora de registrar: ${reminder.label}.`:`Faltam ${reminder.minutesLeft} min para registrar: ${reminder.label} às ${reminder.time}.`;}
+function updateNotificationBell({announce=false}={}){
+  const reminder=pointReminderStatus();
+  document.querySelectorAll('[data-notification]').forEach(button=>{button.classList.toggle('has-alert',Boolean(reminder));button.setAttribute('aria-label',reminder?reminderMessage(reminder):`Próximo ponto às ${nextPointReminder().time}`);});
+  if(reminder&&announce){const key=`ticketReminder:${todayIso()}:${reminder.time}`;if(!localStorage.getItem(key)){localStorage.setItem(key,'1');toast(reminderMessage(reminder));}}
+  return reminder;
+}
 function toMinutes(time){ if(!/^\d{2}:\d{2}$/.test(String(time))) return null; const [h,m]=time.split(':').map(Number); return h*60+m; }
 function formatDuration(minutes,{signed=false}={}){ if(minutes==null||Number.isNaN(minutes)) return '--h--'; const sign=minutes<0?'-':signed&&minutes>0?'+':''; const abs=Math.abs(Math.round(minutes)); return `${sign}${String(Math.floor(abs/60)).padStart(2,'0')}h ${String(abs%60).padStart(2,'0')}m`; }
 function scheduleForDate(iso,schedule=DEFAULT_SCHEDULE){ const dt=new Date(`${iso}T12:00:00`); return structuredClone(schedule[dt.getDay()] || DEFAULT_SCHEDULE[dt.getDay()]); }
@@ -103,6 +144,7 @@ function greeting(){ const h=new Date().getHours(); return h<12?'Bom dia':h<18?'
 function uuid(){ return crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`; }
 function cpfDigits(v=''){ return String(v).replace(/\D/g,'').slice(0,11); }
 function formatCpf(v=''){ const d=cpfDigits(v); return d.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2'); }
+function maskCpf(v=''){ const d=cpfDigits(v); return d.length===11?`${d.slice(0,3)}.xxx.xxx-${d.slice(9)}`:formatCpf(d); }
 function nextPunchType(record,schedule=DEFAULT_SCHEDULE){ const c=calculateRecord(record,schedule); if(c.requiredPunches===2){ return (record?.punches?.length||0)===0?'entry':'exit'; } return ['entry','lunch','return','exit'][Math.min(record?.punches?.length||0,3)]; }
 
 const DB_NAME='ticket-glass-db';
@@ -148,6 +190,8 @@ function clearSession(){ localStorage.removeItem('ticketGlassSession'); }
 const app=document.querySelector('#app');
 const toastRoot=document.querySelector('#toastRoot');
 const state={profile:null,records:[],schedule:structuredClone(DEFAULT_SCHEDULE),balance:{minutes:0,referenceDate:'',note:'',history:[]},closing:{mode:'custom',startDay:16},view:'dashboard',recordRange:'today',reportMonth:monthKey(todayIso()),calendarMonth:monthKey(todayIso()),captureMode:'point',receiptFile:null,receiptUrl:'',environmentFile:null,environmentUrl:'',stream:null,settingsTab:'schedule'};
+let authSuccessTimer=0;
+let homeClockTimer=0;
 
 function esc(v=''){return String(v).replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
 function toast(message){const el=document.createElement('div');el.className='toast';el.textContent=message;toastRoot.append(el);setTimeout(()=>el.remove(),3600);}
@@ -168,28 +212,76 @@ async function loadState(){
   state.schedule=await getSetting(cpf,'schedule',structuredClone(DEFAULT_SCHEDULE));
   state.balance=await getSetting(cpf,'balance',{minutes:0,referenceDate:'',note:'',history:[]});
   state.closing=await getSetting(cpf,'closing',{mode:'custom',startDay:16});
+  state.holidays=await getSetting(cpf,'holidays',state.holidays||[]);
   return true;
 }
 
 function authTemplate(mode='login'){
-  return `<main class="auth-page"><section class="auth-card">
-    <div class="auth-hero"><div class="brand">${brand()}</div><h1>Seu ponto.<br>Suas horas.<br><em>Seu controle.</em></h1><p>Um novo sistema independente para registrar a jornada, acompanhar horas extras e manter o banco de horas sob controle.</p>
-      <div class="hero-flow"><div style="color:#11a96f">${icon('entry',26)}<small>Entrada</small></div><div style="color:#7b44d7">${icon('lunch',26)}<small>Almoço</small></div><div style="color:#159bd3">${icon('return',26)}<small>Retorno</small></div><div style="color:#ee6466">${icon('exit',26)}<small>Saída</small></div></div>
-    </div>
-    <div class="auth-form-wrap"><div class="brand">${brand()}</div><div class="auth-tabs"><button data-auth="login" class="${mode==='login'?'active':''}">Entrar</button><button data-auth="register" class="${mode==='register'?'active':''}">Criar cadastro</button></div>
-      <h2 style="margin:0 0 8px">${mode==='login'?'Acesse sua conta':'Crie sua conta'}</h2><p class="muted" style="margin:0 0 24px">${mode==='login'?'Informe o CPF cadastrado neste dispositivo.':'Preencha seus dados para iniciar o controle da jornada.'}</p>
-      <form id="authForm" class="form"><input type="hidden" name="mode" value="${mode}">${mode==='register'?`<label class="field"><span>Nome completo</span><input name="fullName" required autocomplete="name"></label><label class="field"><span>E-mail</span><input name="email" type="email" required autocomplete="email"></label>`:''}<label class="field"><span>CPF</span><input id="cpfInput" name="cpf" inputmode="numeric" maxlength="14" required autocomplete="username" placeholder="000.000.000-00"></label><button class="primary" type="submit">${mode==='login'?'Entrar no Ticket.':'Criar cadastro'}</button></form>
-      <small class="muted" style="margin-top:18px;line-height:1.5">Nesta primeira versão, os dados ficam armazenados neste navegador. Sincronização em nuvem pode ser conectada depois.</small>
+  const login=mode==='login';
+  return `<main class="auth-page auth-page-v145"><section class="auth-card auth-card-v145">
+    <div class="auth-orb auth-orb-one" aria-hidden="true"></div><div class="auth-orb auth-orb-two" aria-hidden="true"></div>
+    <div class="auth-form-wrap auth-form-v145">
+      <header class="auth-brand-v145"><div class="brand">${brand()}</div><span class="auth-secure-v145">Acesso protegido</span></header>
+      <div class="auth-welcome-v145"><span class="auth-eyebrow-v145">${login?'Bem-vindo de volta':'Seu controle começa aqui'}</span><h1>${login?'Entre no Ticket.':'Crie sua conta.'}</h1><p>${login?'Digite o CPF cadastrado para continuar.':'Informe seu nome e CPF para começar a registrar sua jornada.'}</p></div>
+      <div class="auth-tabs" role="tablist" aria-label="Escolha entre entrar ou criar cadastro"><button type="button" role="tab" aria-selected="${login}" data-auth="login" class="${login?'active':''}">Entrar</button><button type="button" role="tab" aria-selected="${!login}" data-auth="register" class="${!login?'active':''}">Criar cadastro</button></div>
+      <form id="authForm" class="form auth-form-fields-v145"><input type="hidden" name="mode" value="${mode}">${login?`
+        <label class="field"><span>CPF</span><input id="cpfInput" name="cpf" inputmode="numeric" maxlength="14" required autocomplete="username" aria-label="CPF cadastrado" placeholder="Digite seu CPF" data-protect-on-blur="true"></label>`:`
+        <label class="field"><span>Nome completo</span><input name="fullName" required autocomplete="name" placeholder="Digite seu nome completo"></label>
+        <label class="field"><span>CPF</span><input id="cpfInput" name="cpf" inputmode="numeric" maxlength="14" required autocomplete="username" aria-label="CPF completo" placeholder="Digite seu CPF" data-protect-on-blur="true"></label>
+        <small class="auth-cpf-help-v146">Após o preenchimento, os números centrais serão protegidos.</small>`}
+        <button class="primary auth-submit-v145" type="submit"><span>${login?'Entrar no Ticket.':'Criar minha conta'}</span><span aria-hidden="true">→</span></button>
+      </form>
+      <div class="auth-privacy-v145"><span aria-hidden="true">✓</span><small>Seus dados ficam protegidos neste dispositivo.</small></div>
     </div>
   </section></main>`;
 }
-function renderAuth(mode='login'){stopCamera();app.innerHTML=authTemplate(mode);document.querySelectorAll('[data-auth]').forEach(b=>b.onclick=()=>renderAuth(b.dataset.auth));const input=document.querySelector('#cpfInput');input.oninput=()=>input.value=formatCpf(input.value);document.querySelector('#authForm').onsubmit=handleAuth;}
-async function handleAuth(e){e.preventDefault();const d=Object.fromEntries(new FormData(e.currentTarget));const cpf=cpfDigits(d.cpf);if(cpf.length!==11){toast('Informe um CPF com 11 dígitos.');return;}if(d.mode==='register'){if(await getProfile(cpf)){toast('Este CPF já está cadastrado.');renderAuth('login');return;}const profile={cpf,fullName:String(d.fullName).trim(),email:String(d.email).trim(),createdAt:new Date().toISOString()};await saveProfile(profile);setSession(cpf);}else{const p=await getProfile(cpf);if(!p){toast('CPF não encontrado neste dispositivo.');return;}setSession(cpf);}await boot().catch(showStartupError);}
+function registrationSuccessTemplate(profile){
+  return `<main class="auth-page auth-page-v145"><section class="auth-card auth-card-v145">
+    <div class="auth-orb auth-orb-one" aria-hidden="true"></div><div class="auth-orb auth-orb-two" aria-hidden="true"></div>
+    <div class="auth-form-wrap auth-form-v145 auth-success-v148">
+      <header class="auth-brand-v145"><div class="brand">${brand()}</div><span class="auth-secure-v145">Cadastro protegido</span></header>
+      <div class="auth-success-content-v148" role="status" aria-live="polite">
+        <div class="auth-success-check-v148" aria-hidden="true"><span>✓</span></div>
+        <span class="auth-eyebrow-v145">Tudo certo</span>
+        <h1>Cadastro realizado!</h1>
+        <p><strong>${esc(firstName(profile.fullName))}</strong>, sua conta foi criada com sucesso.</p>
+        <div class="auth-success-cpf-v148"><small>CPF cadastrado</small><strong>${maskCpf(profile.cpf)}</strong></div>
+        <p class="auth-success-next-v148">Agora entre no Ticket. usando o CPF que você cadastrou.</p>
+        <button id="goToLogin" class="primary auth-submit-v145" type="button"><span>Ir para o login</span><span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </section></main>`;
+}
+function showRegistrationSuccess(profile){
+  clearTimeout(authSuccessTimer);clearSession();stopCamera();app.innerHTML=registrationSuccessTemplate(profile);
+  const goToLogin=()=>{clearTimeout(authSuccessTimer);authSuccessTimer=0;renderAuth('login');};
+  document.querySelector('#goToLogin').onclick=goToLogin;
+  authSuccessTimer=setTimeout(goToLogin,3200);
+}
+function renderAuth(mode='login'){
+  clearTimeout(authSuccessTimer);authSuccessTimer=0;stopCamera();app.innerHTML=authTemplate(mode);
+  document.querySelectorAll('[data-auth]').forEach(b=>b.onclick=()=>renderAuth(b.dataset.auth));
+  const cpfInput=document.querySelector('#cpfInput');
+  if(cpfInput)ticketProtectCpf(cpfInput);
+  document.querySelector('#authForm').onsubmit=handleAuth;
+}
+async function handleAuth(e){
+  e.preventDefault();const form=e.currentTarget,d=Object.fromEntries(new FormData(form));
+  if(d.mode==='register'){
+    const cpf=cpfDigits(form.querySelector('#cpfInput')?.dataset.rawCpf||d.cpf);if(cpf.length!==11){toast('Informe um CPF com 11 dígitos.');return;}
+    if(await getProfile(cpf)){toast('Este CPF já está cadastrado.');renderAuth('login');return;}
+    const profile={cpf,fullName:String(d.fullName).trim(),email:'',createdAt:new Date().toISOString()};await saveProfile(profile);showRegistrationSuccess(profile);return;
+  }else{
+    const cpf=cpfDigits(form.querySelector('#cpfInput')?.dataset.rawCpf||d.cpf);if(cpf.length!==11){toast('Informe o CPF completo com 11 dígitos.');return;}
+    const profile=await getProfile(cpf);if(!profile){toast('CPF não encontrado neste dispositivo.');return;}setSession(cpf);
+  }
+  await boot({afterLogin:true}).catch(showStartupError);
+}
 
 function sidebarButton(view,label,ico){return `<button data-view="${view}" class="${state.view===view?'active':''}">${icon(ico,19)}<span>${label}</span></button>`;}
 function shellTemplate(){return `<div class="shell"><aside class="sidebar"><div class="brand">${brand()}</div><nav class="nav">${sidebarButton('dashboard','Início','home')}${sidebarButton('records','Registros','records')}${sidebarButton('capture','Registrar ponto','clock')}${sidebarButton('reports','Relatórios','report')}${sidebarButton('calendar','Calendário','calendar')}${sidebarButton('settings','Configurações','settings')}${sidebarButton('storage','Armazenamento','cloud')}${sidebarButton('profile','Perfil','user')}</nav><div class="sidebar-profile"><div class="avatar">${profileInitial()}</div><div><strong>${esc(firstName(state.profile.fullName))}</strong><small>${esc(state.profile.email)}</small></div><button id="logout" class="icon-btn">${icon('logout',19)}</button></div></aside>
-<main class="main"><div class="mobile-brand"><div class="brand">${brand()}</div><button class="icon-btn" data-view="profile">${icon('user',20)}</button></div><header class="topbar"><div><h1 id="topTitle">Ticket.</h1><small>${esc(longDate())}</small></div><div class="toolbar"><span class="badge positive">Online</span><button class="icon-btn" data-view="profile">${icon('user',20)}</button></div></header><div class="content" id="content"></div></main>
-<nav class="glass-dock"><button data-view="dashboard">${icon('home',21)}<span>Início</span></button><button data-view="records">${icon('records',21)}<span>Registros</span></button><button data-view="reports">${icon('report',21)}<span>Relatórios</span></button><button data-view="calendar">${icon('calendar',21)}<span>Calendário</span></button><button data-view="settings">${icon('more',21)}<span>Mais</span></button></nav></div>`;}
+<main class="main"><div class="mobile-brand"><div class="brand">${brand()}</div><div class="mobile-brand-actions-v151"><button class="icon-btn notification-bell-v151" data-notification aria-label="Notificações">${icon('bell',20)}<i aria-hidden="true"></i></button><button class="icon-btn" data-view="profile" aria-label="Perfil">${icon('user',20)}</button></div></div><header class="topbar"><div><h1 id="topTitle" class="brand">${brand()}</h1><small>${esc(longDate())}</small></div><div class="toolbar"><span class="badge positive">Online</span><button class="icon-btn notification-bell-v151" data-notification aria-label="Notificações">${icon('bell',20)}<i aria-hidden="true"></i></button><button class="icon-btn" data-view="profile">${icon('user',20)}</button></div></header><div class="content" id="content"></div></main>
+<nav class="glass-dock"><button data-view="dashboard">${dockPremiumIcon('home')}<span>Início</span></button><button data-view="records">${dockPremiumIcon('records')}<span>Registros</span></button><button data-view="reports">${dockPremiumIcon('report')}<span>Relatórios</span></button><button data-view="calendar">${dockPremiumIcon('calendar')}<span>Calendário</span></button><button data-view="settings">${dockPremiumIcon('more')}<span>Mais</span></button></nav></div>`;}
 function renderShell(){app.innerHTML=shellTemplate();bindNav();renderView();document.querySelector('#logout').onclick=logout;}
 function bindNav(){document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.view)));}
 function navigate(view){stopCamera();state.view=view;renderShell();}
@@ -197,13 +289,27 @@ function logout(){stopCamera();clearSession();state.profile=null;renderAuth('log
 function head(title,subtitle,right=''){return `<div class="page-head"><div><h2>${title}</h2><p>${subtitle}</p></div>${right}</div>`;}
 
 function workdayFlow(record){const punches=record?.punches||[];const map={};punches.forEach(p=>map[p.type]=p.time);return `<div class="workday-flow"><div class="flow-step entry"><span class="flow-icon">${icon('entry',24)}</span><small>Entrada</small><b>${map.entry||'--:--'}</b></div><i class="flow-link"></i><div class="flow-step lunch"><span class="flow-icon">${icon('lunch',24)}</span><small>Almoço</small><b>${map.lunch||'--:--'}</b></div><i class="flow-link"></i><div class="flow-step return"><span class="flow-icon">${icon('return',24)}</span><small>Retorno</small><b>${map.return||'--:--'}</b></div><i class="flow-link"></i><div class="flow-step exit"><span class="flow-icon">${icon('exit',24)}</span><small>Saída</small><b>${map.exit||'--:--'}</b></div></div>`;}
+function homeJourneyFlow(record){const map={};(record?.punches||[]).forEach(p=>map[p.type]=p.time);const steps=[['entry','Entrada'],['lunch','Almoço'],['return','Retorno'],['exit','Saída']];return `<div class="home-journey-flow-v152">${steps.map(([key,label],index)=>`${index?'<i class="home-journey-link-v152"></i>':''}<div class="home-journey-step-v152 ${key}"><span class="home-premium-badge-v152">${homePremiumIcon(key,28)}</span><small>${label}</small><b>${map[key]||'--:--'}</b></div>`).join('')}</div>`;}
+function homeMetric(label,value,ico,tone=''){return `<article class="home-metric-card-v152 ${tone}"><div><span>${label}</span><strong>${value}</strong></div><span class="home-metric-icon-v152">${homePremiumIcon(ico,25)}</span></article>`;}
 function stat(label,value,ico,tone=''){return `<article class="stat ${tone}"><div class="stat-label"><span>${label}</span><span class="stat-icon">${icon(ico,18)}</span></div><strong>${value}</strong></article>`;}
 function recordCard(r){const c=calculateRecord(r,state.schedule);const d=new Date(`${r.date}T12:00:00`);const weekday=new Intl.DateTimeFormat('pt-BR',{weekday:'short'}).format(d).replace('.','');const map={};(r.punches||[]).forEach(p=>map[p.type]=p.time);const badge=!c.complete?`<span class="badge pending">Pendente</span>`:c.balanceMinutes>=0?`<span class="badge positive">${formatDuration(c.balanceMinutes,{signed:true})}</span>`:`<span class="badge negative">${formatDuration(c.balanceMinutes,{signed:true})}</span>`;return `<article class="record-card"><div class="record-date"><small>${weekday}</small><b>${r.date.slice(8,10)}</b><small>${r.date.slice(5,7)}</small></div><div class="record-times"><div><span>Entrada</span><b>${map.entry||'--:--'}</b></div><div><span>Almoço</span><b>${map.lunch||'--:--'}</b></div><div><span>Retorno</span><b>${map.return||'--:--'}</b></div><div><span>Saída</span><b>${map.exit||'--:--'}</b></div></div><div>${badge}<small class="muted" style="display:block;text-align:right;margin-top:6px">${formatDuration(c.workedMinutes)}</small></div></article>`;}
-function dashboardView(){const today=currentRecord();const c=calculateRecord(today,state.schedule);const p=period();const recent=state.records.slice(0,5);return `${head(`${greeting()}, ${esc(firstName(state.profile.fullName))}`,'Acompanhe sua jornada e o banco de horas em tempo real.')}
-<div class="dashboard-grid"><section><article class="workday-card"><div class="workday-top"><strong>Seu dia de trabalho</strong><span>${today?.punches?.length||0} de ${c.requiredPunches||4} batidas</span></div>${workdayFlow(today)}<button id="quickRegister" class="register-btn">Registrar ponto</button></article><div class="stats">${stat('Horas hoje',formatDuration(c.workedMinutes),'clock','blue')}${stat('Horas extras hoje',c.balanceMinutes==null?'--h--':formatDuration(c.balanceMinutes,{signed:true}),'bolt',c.balanceMinutes>=0?'green':'orange')}${stat('Banco de horas',formatDuration(totalBalance(),{signed:true}),'hourglass','green')}${stat('Meta do dia',formatDuration(c.expectedMinutes),'target','purple')}</div><article class="period-card"><div><small>Período atual</small><strong>${formatDateBr(p.startDate)} até ${formatDateBr(p.endDate)}</strong></div><div style="text-align:right"><small>Saldo acumulado</small><strong class="period-balance">${formatDuration(totalBalance(),{signed:true})}</strong></div></article></section>
-<section class="panel recent-panel"><div class="panel-head"><div><h3>Registros recentes</h3><p>Últimas jornadas registradas</p></div><button class="secondary" data-view="records">Ver todos</button></div><div class="record-list">${recent.length?recent.map(recordCard).join(''):'<p class="muted">Nenhum registro ainda.</p>'}</div></section></div>`;}
+function dashboardView(){
+  const today=currentRecord(),c=calculateRecord(today,state.schedule),p=period(),punches=today?.punches||[];
+  const next=punches.length>=c.requiredPunches?{label:'Jornada concluída',key:'done'}:(PUNCH_TYPES[punches.length]||{label:'Registrar ponto',key:'entry'});
+  return `<div class="home-v150">
+    <header class="home-welcome-v150"><div><h2 id="homeGreeting">${greeting()}, <span class="ticket-greeting-name">${esc(firstName(state.profile.fullName))}</span></h2><p>Acompanhe sua jornada de hoje.</p></div><div class="home-avatar-v150">${profileInitial()}</div></header>
+    <article class="home-clock-card-v150">
+      <div class="home-clock-top-v150"><div><small>${longDate()}</small><strong id="homeLiveClock">${timeNow()}</strong></div></div>
+      <div class="home-next-v150"><span>Próxima ação</span><strong>${next.label}</strong><small>${punches.length} de ${c.requiredPunches||4} registros realizados</small></div>
+      <button id="quickRegister" class="home-register-v150">${icon('clock',21)}<span>${next.key==='done'?'Ver jornada de hoje':`Registrar ${next.label.toLocaleLowerCase('pt-BR')}`}</span><b aria-hidden="true">→</b></button>
+    </article>
+    <article class="home-section-v150 home-journey-v150"><div class="home-section-head-v150"><div><h3>Jornada de hoje</h3><p>Seus horários registrados</p></div><span>${punches.length}/${c.requiredPunches||4}</span></div>${homeJourneyFlow(today)}</article>
+    <section class="home-metrics-v150">${homeMetric('Horas hoje',formatDuration(c.workedMinutes),'clock','blue')}${homeMetric('Horas extras',c.balanceMinutes==null?'--h--':formatDuration(c.balanceMinutes,{signed:true}),'overtime',c.balanceMinutes>=0?'green':'orange')}${homeMetric('Banco de horas',formatDuration(totalBalance(),{signed:true}),'bank','green')}${homeMetric('Meta diária',formatDuration(c.expectedMinutes),'target','purple')}</section>
+    <article class="period-card home-period-v150"><div><small>Período atual</small><strong>${formatDateBr(p.startDate)} até ${formatDateBr(p.endDate)}</strong></div><div><small>Saldo acumulado</small><strong class="period-balance">${formatDuration(totalBalance(),{signed:true})}</strong></div></article>
+  </div>`;
+}
 
-function recordsView(){const tabs=`<div class="segmented"><button data-range="today" class="${state.recordRange==='today'?'active':''}">Hoje</button><button data-range="week" class="${state.recordRange==='week'?'active':''}">Semana</button><button data-range="month" class="${state.recordRange==='month'?'active':''}">Mês</button></div>`;let recs=[...state.records];const t=todayIso();if(state.recordRange==='today') recs=recs.filter(r=>r.date===t);if(state.recordRange==='week'){const d=new Date(`${t}T12:00:00`);const start=new Date(d);start.setDate(d.getDate()-((d.getDay()+6)%7));const s=todayIso(start);recs=recs.filter(r=>r.date>=s&&r.date<=t);}if(state.recordRange==='month') recs=recs.filter(r=>monthKey(r.date)===monthKey(t));return `${head('Registros','Consulte as batidas e os totais de cada dia.',tabs)}<div class="record-list">${recs.length?recs.map(recordCard).join(''):'<article class="panel"><p class="muted">Nenhum registro nesse período.</p></article>'}</div>`;}
+function recordsView(){const tabs=`<div class="segmented"><button data-range="today" class="${state.recordRange==='today'?'active':''}">Hoje</button><button data-range="week" class="${state.recordRange==='week'?'active':''}">Semana</button><button data-range="month" class="${state.recordRange==='month'?'active':''}">Mês</button></div>`;let recs=[...state.records,...(typeof ticketDayRecords==='function'?ticketDayRecords():[])].sort((a,b)=>b.date.localeCompare(a.date));const t=todayIso();if(state.recordRange==='today') recs=recs.filter(r=>r.date===t);if(state.recordRange==='week'){const d=new Date(`${t}T12:00:00`);const start=new Date(d);start.setDate(d.getDate()-((d.getDay()+6)%7));const s=todayIso(start);recs=recs.filter(r=>r.date>=s&&r.date<=t);}if(state.recordRange==='month') recs=recs.filter(r=>monthKey(r.date)===monthKey(t));return `${head('Registros','Consulte as batidas e os totais de cada dia.',tabs)}<div class="record-list">${recs.length?recs.map(recordCard).join(''):'<article class="panel"><p class="muted">Nenhum registro nesse período.</p></article>'}</div>`;}
 
 function captureView(){const record=currentRecord();const c=calculateRecord(record,state.schedule);const next=nextPunchType(record,state.schedule);const options=PUNCH_TYPES.map(p=>`<option value="${p.key}" ${p.key===next?'selected':''}>${p.label}</option>`).join('');return `${head('Registrar ponto','Fotografe o comprovante e, opcionalmente, registre o ambiente de trabalho.')}
 <div class="capture-layout"><article class="panel"><div class="capture-box"><h3>Comprovante do ponto</h3><div class="camera-stage" id="cameraStage"><video id="cameraVideo" class="hidden" playsinline muted></video>${state.receiptUrl?`<img src="${state.receiptUrl}" alt="Comprovante">`:`<div class="camera-placeholder">${icon('camera',42)}<p>Use a câmera ou escolha uma foto do comprovante.</p></div>`}</div><div class="camera-actions"><button id="startCamera" class="secondary">${icon('camera',18)} Abrir câmera</button><label class="secondary" style="display:flex;align-items:center;justify-content:center;gap:8px">Escolher foto<input id="receiptPicker" type="file" accept="image/*" capture="environment" hidden></label><button id="takePhoto" class="secondary hidden">Capturar foto</button><button id="stopCamera" class="secondary hidden">Fechar câmera</button></div></div>
@@ -228,7 +334,7 @@ function storageView(){return `${head('Armazenamento','Gerencie onde comprovante
 function profileView(){return `${head('Perfil','Dados da conta e sessão atual.')}<div class="stack"><article class="panel profile-card"><div class="avatar">${profileInitial()}</div><div><strong>${esc(state.profile.fullName)}</strong><small class="muted" style="display:block;margin-top:4px">${esc(state.profile.email)} · ${formatCpf(state.profile.cpf)}</small></div></article><article class="panel"><button id="logoutProfile" class="secondary profile-action" style="width:100%;margin-bottom:10px">${icon('logout',18)}<span>Sair da conta</span></button><button id="clearProfile" class="secondary danger profile-action" style="width:100%">${icon('trash',18)}<span>Apagar dados locais deste perfil</span></button></article></div>`;}
 
 function renderView(){const content=document.querySelector('#content');if(!content)return;const views={dashboard:dashboardView,records:recordsView,capture:captureView,reports:reportsView,calendar:calendarView,settings:settingsView,storage:storageView,profile:profileView};content.innerHTML=(views[state.view]||dashboardView)();bindViewEvents();document.querySelectorAll('.glass-dock [data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===state.view));document.querySelectorAll('.sidebar [data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===state.view));}
-function bindViewEvents(){bindNav();if(state.view==='dashboard')document.querySelector('#quickRegister')?.addEventListener('click',()=>navigate('capture'));if(state.view==='records')document.querySelectorAll('[data-range]').forEach(b=>b.onclick=()=>{state.recordRange=b.dataset.range;renderView();});if(state.view==='capture')bindCapture();if(state.view==='calendar')bindCalendar();if(state.view==='settings')bindSettings();if(state.view==='storage')document.querySelector('#exportData')?.addEventListener('click',exportData);if(state.view==='profile'){document.querySelector('#logoutProfile')?.addEventListener('click',logout);document.querySelector('#clearProfile')?.addEventListener('click',async()=>{if(!confirm('Apagar todos os registros e configurações deste perfil neste navegador?'))return;await clearProfileData(state.profile.cpf);state.records=[];toast('Dados locais removidos.');navigate('dashboard');});}}
+function bindViewEvents(){bindNav();clearInterval(homeClockTimer);document.querySelectorAll('[data-notification]').forEach(button=>button.onclick=()=>{const reminder=updateNotificationBell();toast(reminder?reminderMessage(reminder):`Próximo ponto: ${nextPointReminder().label} às ${nextPointReminder().time}.`);});if(state.view==='dashboard'){document.querySelector('#quickRegister')?.addEventListener('click',()=>navigate('capture'));updateNotificationBell({announce:true});const clock=document.querySelector('#homeLiveClock'),greetingEl=document.querySelector('#homeGreeting'),first=firstName(state.profile.fullName);const refreshHomeTime=()=>{if(clock)clock.textContent=timeNow();if(greetingEl)greetingEl.innerHTML=`${greeting()}, <span class="ticket-greeting-name">${esc(first)}</span>`;updateNotificationBell({announce:true});};refreshHomeTime();homeClockTimer=setInterval(refreshHomeTime,1000);}if(state.view==='records')document.querySelectorAll('[data-range]').forEach(b=>b.onclick=()=>{state.recordRange=b.dataset.range;renderView();});if(state.view==='capture')bindCapture();if(state.view==='calendar')bindCalendar();if(state.view==='settings')bindSettings();if(state.view==='storage')document.querySelector('#exportData')?.addEventListener('click',exportData);if(state.view==='profile'){document.querySelector('#logoutProfile')?.addEventListener('click',logout);document.querySelector('#clearProfile')?.addEventListener('click',async()=>{if(!confirm('Apagar todos os registros e configurações deste perfil neste navegador?'))return;await clearProfileData(state.profile.cpf);state.records=[];toast('Dados locais removidos.');navigate('dashboard');});}}
 function bindCapture(){document.querySelector('#captureForm').onsubmit=submitCapture;document.querySelector('#receiptPicker').onchange=e=>setFile('receipt',e.target.files[0]);document.querySelector('#environmentPicker').onchange=e=>setFile('environment',e.target.files[0]);document.querySelector('#startCamera').onclick=startCamera;document.querySelector('#stopCamera').onclick=()=>{stopCamera();renderView();};document.querySelector('#takePhoto').onclick=takePhoto;}
 async function startCamera(){try{stopCamera();state.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});const v=document.querySelector('#cameraVideo');v.srcObject=state.stream;v.classList.remove('hidden');await v.play();document.querySelector('#takePhoto').classList.remove('hidden');document.querySelector('#stopCamera').classList.remove('hidden');document.querySelector('#startCamera').classList.add('hidden');}catch{toast('Não foi possível abrir a câmera. Use a opção de escolher foto.');}}
 async function takePhoto(){const v=document.querySelector('#cameraVideo');if(!v?.videoWidth)return;const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',.9));stopCamera();setFile('receipt',blob);}
@@ -236,7 +342,15 @@ function bindCalendar(){document.querySelector('#calMonth').onchange=e=>{state.c
 function bindSettings(){document.querySelectorAll('[data-setting]').forEach(b=>b.onclick=()=>{state.settingsTab=b.dataset.setting;renderView();});document.querySelector('#scheduleForm')?.addEventListener('submit',async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.currentTarget));for(let i=0;i<7;i++){const active=d[`active-${i}`]==='1';const h=Math.max(0,Number(d[`hours-${i}`]||0));state.schedule[i]={active,requiredPunches:active?(i===6?2:4):0,expectedMinutes:h*60};}await saveSetting(state.profile.cpf,'schedule',state.schedule);toast('Jornada salva.');renderView();});document.querySelector('#balanceForm')?.addEventListener('submit',async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.currentTarget));let mins=Number(d.hours||0)*60+Number(d.minutes||0);if(d.type==='negative')mins*=-1;const item={minutes:mins,referenceDate:d.referenceDate,note:d.note,changedAt:new Date().toISOString()};state.balance={minutes:mins,referenceDate:d.referenceDate,note:d.note,history:[...(state.balance.history||[]),item]};await saveSetting(state.profile.cpf,'balance',state.balance);toast('Saldo anterior salvo.');renderView();});document.querySelector('#closingForm')?.addEventListener('submit',async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.currentTarget));state.closing={mode:d.mode,startDay:Number(d.startDay||1)};await saveSetting(state.profile.cpf,'closing',state.closing);toast('Período salvo.');renderView();});}
 function exportData(){const payload={version:1,exportedAt:new Date().toISOString(),profile:state.profile,records:state.records,schedule:state.schedule,balance:state.balance,closing:state.closing};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`ticket-backup-${todayIso()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),500);}
 
-async function boot(){if(!(await loadState())){renderAuth((await listProfiles()).length?'login':'register');return;}renderShell();}
+async function boot({afterLogin=false}={}){
+  await (window.__ticketSplashDone||Promise.resolve());
+  if(!afterLogin){
+    clearSession();state.profile=null;
+    renderAuth((await listProfiles()).length?'login':'register');return;
+  }
+  if(!(await loadState())){renderAuth((await listProfiles()).length?'login':'register');return;}
+  renderShell();
+}
 window.addEventListener('beforeunload',()=>{stopCamera();clearUrls();});
 if('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('/public/sw.js').catch(()=>{});
 boot().catch(showStartupError);

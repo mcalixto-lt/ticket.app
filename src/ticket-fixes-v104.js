@@ -1,7 +1,7 @@
 /* Ticket. 1.0.4 — prévias persistentes nos registros, seleção bloqueada e navegação Android */
 'use strict';
 
-const TICKET_V104_VIEWS = new Set(['dashboard','records','capture','reports','calendar','settings','storage','profile']);
+const TICKET_V104_VIEWS = new Set(['dashboard','records','capture','reports','calendar','settings','storage','profile','help','registration']);
 const ticketEvidenceUrlsV104 = new Map();
 let ticketHistoryFromPopV104 = false;
 let ticketHistoryReadyV104 = false;
@@ -106,7 +106,7 @@ function v104OpenEvidencePreview({url,label,time,hash,lockedAt}){
   modal.setAttribute('aria-hidden','false');
   document.documentElement.classList.add('evidence-modal-open');
   if(state.profile && !ticketHistoryFromPopV104){
-    history.pushState({ticketApp:true,view:state.view,preview:true},'',`${location.pathname}${location.search}#${state.view}`);
+    history.pushState({ticketApp:true,ticketNavigation162:true,view:state.view,preview:true},'',`${location.pathname}${location.search}#${state.view}`);
   }
 }
 
@@ -143,7 +143,7 @@ navigate=function(view){
   const previous=state.view;
   const result=originalNavigateV104(target);
   if(state.profile && !ticketHistoryFromPopV104 && target!==previous){
-    history.pushState({ticketApp:true,view:target},'',v104RouteUrl(target));
+    history.pushState({ticketApp:true,ticketNavigation162:true,view:target},'',v104RouteUrl(target));
   }
   queueMicrotask(()=>v104HydrateRecordPreviews(document));
   return result;
@@ -154,7 +154,15 @@ function v104InitializeHistory(){
   ticketHistoryReadyV104=true;
   const requested=String(location.hash||'').replace(/^#/,'');
   const target=TICKET_V104_VIEWS.has(requested)?requested:(TICKET_V104_VIEWS.has(state.view)?state.view:'dashboard');
-  history.replaceState({ticketApp:true,view:target},'',v104RouteUrl(target));
+  // An internal base entry keeps ordinary Back navigation inside the app.
+  if(!history.state?.ticketNavigation162){
+    history.replaceState({ticketApp:true,ticketNavigation162:true,view:'dashboard',ticketBase:true},'',v104RouteUrl('dashboard'));
+    history.pushState({ticketApp:true,ticketNavigation162:true,view:target},'',v104RouteUrl(target));
+  }else if(history.state.ticketBase){
+    history.pushState({ticketApp:true,ticketNavigation162:true,view:target},'',v104RouteUrl(target));
+  }else{
+    history.replaceState({...history.state,view:target},'',v104RouteUrl(target));
+  }
   if(target!==state.view){
     ticketHistoryFromPopV104=true;
     try{ originalNavigateV104(target); }finally{ ticketHistoryFromPopV104=false; }
@@ -167,6 +175,9 @@ window.addEventListener('popstate',event=>{
     if(event.state?.preview) return;
   }
   if(!state.profile) return;
+  if(event.state?.ticketBase){
+    history.pushState({ticketApp:true,ticketNavigation162:true,view:'dashboard'},'',v104RouteUrl('dashboard'));
+  }
   const target=event.state?.ticketApp && TICKET_V104_VIEWS.has(event.state.view) ? event.state.view : null;
   if(!target) return;
   if(target===state.view){

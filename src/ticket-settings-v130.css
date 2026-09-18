@@ -31,7 +31,7 @@
 .v130-resources-card .v130-schedule-inside .settings-card-head{
   margin-bottom:14px;
 }
-@media(max-width:760px){
+@container ticket (max-width:760px){
   #balanceForm > .two-col,
   #closingForm > .two-col{
     grid-template-columns:minmax(0,1fr) minmax(0,1fr);

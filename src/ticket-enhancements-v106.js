@@ -199,8 +199,8 @@ startCamera=async function(){
     if(!video)return;
     video.srcObject=state.stream;video.classList.remove('hidden');await video.play();
     const btn=document.querySelector('#startCamera');
-    if(btn){btn.classList.add('armed');btn.title='Capturar foto';btn.setAttribute('aria-label','Capturar foto');btn.innerHTML='<span class="v106-shutter-core"></span>';}
-  }catch(error){console.warn(error);toast('Não foi possível abrir a câmera. Verifique a permissão ou use a galeria.');}
+    if(btn){btn.classList.add('armed');btn.title='Capturar comprovante';btn.setAttribute('aria-label','Capturar comprovante');if(!btn.classList.contains('v156-capture-action'))btn.innerHTML='<span class="v106-shutter-core"></span>';}
+  }catch(error){console.warn(error);toast('Não foi possível abrir a câmera. Verifique a permissão do dispositivo e tente novamente.');}
 };
 
 takePhoto=async function(){
@@ -256,7 +256,15 @@ submitCapture=async function(event){
   record.punches.sort((a,b)=>toMinutes(a.time)-toMinutes(b.time));record.immutablePunches=true;record.lockPolicy='append-only';record.updatedAt=now;
   await saveRecord(record);
   clearUrls();state.receiptFile=null;state.receiptOriginalFile=null;state.photoQuality=null;state.environmentFile=null;state.environmentNote='';state.environmentWatermarkAt='';
-  state.records=await listRecords(state.profile.cpf);toast('Ponto confirmado, salvo e bloqueado para alteração.');navigate('records');
+  state.records=await listRecords(state.profile.cpf);
+  const success=document.createElement('div');
+  success.className='receipt-success-v158';
+  success.setAttribute('role','status');
+  success.innerHTML='<div><span aria-hidden="true">✓</span><h2>Comprovante Registrado</h2></div>';
+  document.body.append(success);
+  await new Promise(resolve=>setTimeout(resolve,1500));
+  success.remove();
+  navigate('dashboard');
 };
 
 maskCpf=function(cpf=''){
